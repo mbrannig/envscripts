@@ -1,0 +1,134 @@
+function delete_key()
+{
+    local host
+    local ip
+    if [[ $1 =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]] ; then
+	ip=$1
+	host=$(host ${ip} | cut -d' ' -f5)
+	echo "IP = $1 HOST=${host}"
+    else
+	host=$1
+	ip=$(host ${host} | cut -d' ' -f4)
+	echo "HOST=$1 IP=${ip}"
+    fi
+    ssh-keygen -R ${host}
+    ssh-keygen -R ${ip}
+}
+function rsh()
+{
+    local ARG=$1
+    local host
+    local user=${USER}
+    if [[ ${ARG} =~ "@" ]] ; then
+	user=$( echo ${ARG} | cut -d'@' -f1 )
+	host=$( echo ${ARG} | cut -d'@' -f2 )
+    else
+	host=${ARG}
+    fi
+
+    if [[ -n "$2" && "$2" = "-l" ]] ; then
+	if [ -n "$3" ] ; then
+	    user=$3
+	fi
+    fi
+
+    ssh ${user}@${host}
+
+    if [ "${USER}" = "mbrannig" ] ; then
+        xtitle "${SHORTHOST}" 
+    else
+        xtitle "${USER}@${SHORTHOST}" 
+    fi	
+
+
+}
+
+function wait_for_port()
+{
+    local HOST=$1
+    local PORT=$2
+   local keep_going
+    local output
+    local banner
+    keep_going=0
+
+    while [ $keep_going -eq 0 ]  ; do
+	output=$(nc -d -w 2 ${HOST} ${PORT})
+	if [ $? -eq 0 ] ; then
+	    if [ "${PORT}" = "22" ] ; then 
+		if [[ ${output} =~ OpenSSH ]] ; then
+		    keep_going=1
+		    return 0
+		fi
+	    else
+		keep_going=1
+		return 0
+	    fi
+	fi
+	sleep 5
+    done
+    
+}
+
+function copy_pxe_config()
+{
+    local HOST=$1
+    local FILE=$2
+
+    local mac=$(pxe_mac $HOST)
+    if [[ "${mac}" =~ /unable/ ]] ; then
+	echo "Unable to find mac address for ${HOST}"    
+    else
+	rm -vf /nfs/netboot/sf-linux-os/tftpboot/pxelinux.cfg/${mac}
+	
+	cp -vf ${FILE} /nfs/netboot/sf-linux-os/tftpboot/pxelinux.cfg/${mac}
+	
+	chmod -v 777 /nfs/netboot/sf-linux-os/tftpboot/pxelinux.cfg/${mac}
+    fi
+}
+
+function wait_host()
+{
+    local keep_going
+    local output
+    local banner
+    local chars=( "-" "\\" "|" "/" )
+    local count=0
+    local keep_going=0
+    declare -i TIMER
+    TIMER=0
+    SLEEP_TIME=5
+    TIMEOUT=$(( 60/${SLEEP_TIME}*240 ))
+
+    echo -n "Waiting for port $2 on $1:  "
+
+    while [ $keep_going -eq 0 ]  ; do
+	output=$(nc -d -w 2 $1 $2)
+	if [ $? -eq 0 ] ; then
+	    if [ "$2" = "22" ] ; then 
+		if [[ ${output} =~ OpenSSH ]] ; then
+		    keep_going=1
+		    return 0
+		fi
+	    else
+		keep_going=1
+		return 0
+	    fi
+	fi
+	pos=$(($count % 4))
+	echo -en "\b${chars[$pos]}"
+	count=$(($count + 1))
+
+	sleep ${SLEEP_TIME}
+	TIMER=$(( ${TIMER}+${SLEEP_TIME} ))
+
+	if [ ${TIMER} -gt ${TIMEOUT} ] ; then
+	    echo "Timeout waiting for port $2 on $1..." 
+	    keep_going=1
+	    exit 1
+	fi
+    done
+
+    echo -e "\b **** Host $1 ready"
+
+}

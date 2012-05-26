@@ -1,0 +1,70 @@
+#!/usr/bin/expect -f
+
+#
+# IMPORTANT:
+# 
+#################################################
+# Variable Definitions
+#   check these to make sure you don't need to 
+#   change anything
+#
+#################################################
+
+set std_domain sfeng.sourcefire.com
+set std_pwd Sourcefire
+
+# output if you invoke incorrectly
+proc usage {} {
+
+  send {usage: reboot-system.expect [system] [username] [password] }
+  send "\n"
+
+}
+
+
+#
+# MAIN
+#
+
+if { $argc < 3 || $argc > 4 } { usage; exit }
+
+set system_name [lindex $argv 0]
+set username [lindex $argv 1]
+set password [lindex $argv 2]
+
+### for testing, print out that passed data
+#puts "system: $system_name\r"
+
+
+
+#log into target xbeam
+spawn ssh -o StrictHostKeyChecking=no $username@$system_name
+set sshid $spawn_id
+
+send "\r"
+
+### the following is not needed on Halcyon, but was on my local workstation
+#expect "Are you sure you want to continue connecting (yes/no)?" { 
+#  send "yes\r"
+#}
+
+#you should be completely logged out here
+expect -- "*password*"
+send -- "$password\r"
+expect -- "$username@*"
+
+send -- "sudo /sbin/reboot\r"
+
+expect -- "Password:"
+send -- "$password\r"
+
+expect -- "$username@*"
+
+send -- "exit\r"
+expect -- "Connection to * closed."
+
+send \003
+
+puts "success\r"
+exit
+
