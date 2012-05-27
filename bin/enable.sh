@@ -1,7 +1,7 @@
 #!/bin/bash
 
-REPO=~/repo/mbrannig
-RC="bin .bashrc .bashrc-v3-only .bash_profile"
+REPO=~/envscripts
+RC=".bashrc .bashrc-v3-only .bash_profile .Xdefaults .screenrc"
 HOMEDIR=~/
 
 for f in ${RC} ; do
