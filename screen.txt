@@ -1,0 +1,14 @@
+^A ^W - window list, where am I
+^A ^C - create new window
+^A space - next window
+^A p - previous window
+^A ^A - switch to previous screen (toggle)
+^A [0-9] - go to window [0-9]
+^A esc - copy mode, which I use for scrollback
+^A A rename
+^A k close window
+screen -S <name> start a session
+screen -r <name> resume
+^A d detach
+^A S split
+screen -x <name> attach again to a session

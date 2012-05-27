@@ -1,0 +1,3 @@
+01-00-15-17-de-b7-f0 padthai
+
+apt-get purge liboverlay-scrollbar-*
