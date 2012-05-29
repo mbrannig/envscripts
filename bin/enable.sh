@@ -7,21 +7,17 @@ HOMEDIR=~/
 for f in ${RC} ; do
     dir=$(dirname $f)
     if [ -L ${HOMEDIR}/$f ] ; then
-	echo "Already linked $f"
-	continue
-    fi
-    if [ -f ${HOMEDIR}/$f.orig ] ; then
-	echo "Already orig file for $f, please fix"
-	continue
-    fi
-    if [ -f ${HOMEDIR}/$f ] ; then
-	echo mv -v ${HOMEDIR}/$f ${HOMEDIR}/$f.orig
+    	ln -sfv ${REPO}/$f ${HOMEDIR}/$f
     else
-	if [ ! -d ${dir} ] ; then
-	    echo mkdir -pv ${HOMEDIR}/${dir}
-	fi
+    	if [ -f ${HOMEDIR}/$f.orig ] ; then
+		echo "Already orig file for $f, please fix"
+		continue
+    	fi
+    	if [ -f ${HOMEDIR}/$f ] ; then
+		mv -v ${HOMEDIR}/$f ${HOMEDIR}/$f.orig
+    	fi
+    	ln -sfv ${REPO}/$f ${HOMEDIR}/$f
     fi
-    echo ln -sfv ${REPO}/$f ${HOMEDIR}/$f
 done
 
 
