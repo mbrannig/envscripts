@@ -14,14 +14,7 @@ for f in ${RC} ; do
 	echo "Already orig file for $f, please fix"
 	continue
     fi
-    if [ -f ${HOMEDIR}/$f ] ; then
-	echo mv -v ${HOMEDIR}/$f ${HOMEDIR}/$f.orig
-    else
-	if [ ! -d ${dir} ] ; then
-	    echo mkdir -pv ${HOMEDIR}/${dir}
-	fi
-    fi
-    echo ln -sfv ${REPO}/$f ${HOMEDIR}/$f
+    ln -sfv ${REPO}/$f ${HOMEDIR}/$f
 done
 
 

@@ -772,6 +772,11 @@ function caps-to-ctrl()
     setxkbmap -option ctrl:nocaps
 }
 
+function screenhelp()
+{
+	cat ~/repo/mbrannig/screen.txt
+}
+
 EXTRAPTH=
 
 HOST=$(hostname)
@@ -804,6 +809,11 @@ else
     export REPLYTO=mbrannig@mbrannig.org
     HOST_LIST=$(cat ${REPO}/hosts-dos.txt ${REPO}/hosts.txt | xargs ; cat ${REPO}/hosts-sf.txt | sed -e 's/$/.sfeng/g')
     HOST_LIST_FILE=${REPO}/hosts-dos.txt
+fi
+
+if [ -n "${DISPLAY}" ] ; then
+    caps-to-ctrl
+    xrdb ~/.Xdefaults
 fi
 
 if [ "${PLATFORM}" = "Linux" ] ; then
