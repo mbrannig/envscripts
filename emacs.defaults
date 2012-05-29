@@ -1,0 +1,13 @@
+
+emacs*background: DarkSlateGray
+emacs*foreground: Wheat
+emacs*Background: DarkSlateGray
+emacs*Foreground: Wheat
+emacs*pointerColor: Orchid
+emacs*cursorColor: Orchid
+!emacs*bitmapIcon: no
+emacs*font: 7x14
+emacs.geometry: 80x40
+
+
+
