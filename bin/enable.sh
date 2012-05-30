@@ -1,7 +1,7 @@
 #!/bin/bash
 
 REPO=~/envscripts
-RC=".bashrc .bashrc-v3-only .bash_profile .Xdefaults .screenrc"
+RC=".bashrc .bashrc-v3-only .bash_profile .Xdefaults .screenrc .emacs"
 HOMEDIR=~/
 
 for f in ${RC} ; do
