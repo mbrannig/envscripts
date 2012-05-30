@@ -432,7 +432,7 @@ function screenhelp()
 	cat ~/repo/mbrannig/screen.txt
 }
 
-get_chroot
+function get_chroot
 
 if ! bash --version | grep 2.05 >& /dev/null ; then
     source ${REPO}/.bashrc-v3-only

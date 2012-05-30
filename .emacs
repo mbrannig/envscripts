@@ -3,6 +3,16 @@
 (set-default-font "Ubuntu Mono-10")
 (set-cursor-color "#da70d6")
 (set-mouse-color "#da70d6")
+
+;; for some reason, frames need this.
+(setq default-frame-alist
+      '((background-color . "DarkSlateGray")
+	(foreground-color . "Wheat")
+	(font . "Ubuntu Mono-10")
+	(cursor-color . "#da70d6")
+	(mouse-color . "#da70d6")
+))
+
 ;; Red Hat Linux default .emacs initialization file
 ;; Adds the ~/.xemacs directory to the load path
 (setq load-path (cons (expand-file-name "~/envscripts/.emacs.d/") load-path))
@@ -104,3 +114,8 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 
+ (require 'saveplace)
+    (setq-default save-place t)
+
+ (require 'recentf)
+    (recentf-mode 1)
