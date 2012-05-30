@@ -1,8 +1,8 @@
 # MAB
 
 # Get the aliases and functions
-if [ -f ~/repo/mbrannig/.bashrc ]; then
-	. ~/repo/mbrannig/.bashrc
+if [ -f ~/envscripts/.bashrc ]; then
+	. ~/envscripts/.bashrc
 fi
 
 # User specific environment and startup programs

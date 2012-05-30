@@ -12,7 +12,6 @@
 (global-set-key [delete] 'delete-char)
 (global-set-key [kp-delete] 'delete-char)
 
-
 ;;**************************** KEYBINDINGS ********************************
 
 (global-set-key "\M-h" 'help-command)
@@ -22,6 +21,8 @@
 (global-set-key "\M-g" 'goto-line)
 (global-set-key "\C-x?" 'describe-key-briefly)
 (global-set-key "\C-o" 'scroll-down)  ; changed from C-Z because of probs.
+
+(global-set-key [(meta return)] 'complete-tag)
 
 ;; ************************* VARIABLES **********************************
 
@@ -102,5 +103,4 @@
 
 (tool-bar-mode -1)
 (menu-bar-mode -1)
-
 

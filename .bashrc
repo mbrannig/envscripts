@@ -19,6 +19,17 @@ ulimit -c unlimited
 #    return
 #fi
 
+EXTRAPTH=
+
+HOST=$(hostname)
+SHORTHOST=$(hostname -s)
+
+export REPO=~/envscripts
+
+PLATFORM=$(uname )
+ARCH=$(uname -m)
+
+
 # colors
 BOLD="\[\033[1m\]"
 RED="\[\033[1;31m\]"
@@ -28,30 +39,40 @@ CYAN="\[\033[0;36m\]"
 PURPLE="\[\033[0;35m\]"
 RV="\e[7m"
 
-parse_git_branch () {
+source ${REPO}/.git-completion.sh
+
+if [ -f /etc/bash_completion ] ; then source /etc/bash_completion ; fi
+
+export GIT_PS1_SHOWDIRTYSTATE=1
+export GIT_PS1_SHOWUNTRACKEDFILES=1
+export GIT_PS1_SHOWUPSTREAM="auto"
+
+function parse_git_branch () {
     git name-rev HEAD 2> /dev/null | sed 's#HEAD\ \(.*\)# (git::\1)#'
 }
-parse_hg_branch() {
+
+function parse_hg_branch() {
     hg branch 2>/dev/null | sed 's#\(.*\)# (hg::\1)#'
 }
 
-parse_bzr_branch() {
+function parse_bzr_branch() {
     bzr nick 2> /dev/null 
 }
 
-parse_cvs_branch() {
+function parse_cvs_branch() {
     if [ -e CVS ] ; then
 	# cat CVS/Entries  | cut -d'/' -f6 | head -1 | sed -e 's/^T//g'
         CVSBRANCH=`cat CVS/Entries  | cut -d'/' -f6 | head -1 | sed -e 's/^T//g'` ; if [ "$CVSBRANCH" != "" ] ; then echo "$CVSBRANCH" ; else echo -ne "HEAD " ; fi
     fi
 }
 
-get_branch_information() {
+function get_branch_information() {
     if [ "${PLATFORM}" == "Linux" ] ; then
         parse_cvs_branch
 #        parse_git_branch
 #        parse_hg_branch
 	parse_bzr_branch
+	__git_ps1 "%s "
     fi
 }
 
@@ -777,20 +798,12 @@ function screenhelp()
 	cat ~/repo/mbrannig/screen.txt
 }
 
-EXTRAPTH=
-
-HOST=$(hostname)
-SHORTHOST=$(hostname -s)
-
-export REPO=~/repo/mbrannig
+get_chroot
 
 if ! bash --version | grep 2.05 >& /dev/null ; then
     source ${REPO}/.bashrc-v3-only
 fi
-PLATFORM=$(uname )
-ARCH=$(uname -m)
 
-get_chroot
 
 if host ${HOST} | grep sourcefire >& /dev/null ; then
 #    echo -n "Setting up Sourcefire Environment (${ARCH}) ${CHROOT_NAME}: "
@@ -826,7 +839,7 @@ PROMPT_COMMAND=exitstatus
 BRANCH_REPOS="OS BUILD_SCRIPTS SEU 3D INSTALLER MODEL-PACK SnortBuild"
 BRANCHES="MODEL-PACK"
 
-export PATH=~/bin:/opt/local/bin:/opt/local/sbin:/usr/sbin:/sbin:/bin:/usr/bin:/usr/local/bin::/usr/bin/X11:${EXTRAPATH}
+export PATH=~/envscripts/bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/sbin:/sbin:/bin:/usr/bin:/usr/local/bin::/usr/bin/X11:${EXTRAPATH}
 export EDITOR=vi
 export VISUAL=vi
 export PAGER=less
@@ -910,4 +923,5 @@ function _bzr()
 }
 
 complete -F _bzr -o default bzr
+
 
