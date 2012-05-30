@@ -1,6 +1,9 @@
+(set-background-color "DarkSlateGray")
+(set-foreground-color "Wheat")
+(set-default-font "Ubuntu Mono-10")
 ;; Red Hat Linux default .emacs initialization file
 ;; Adds the ~/.xemacs directory to the load path
-(setq load-path (cons (expand-file-name "~/.xemacs/") load-path))
+(setq load-path (cons (expand-file-name "~/envscripts/.emacs.d/") load-path))
 ;; Set up the keyboard so the delete key on both the regular keyboard
 ;; and the keypad delete the character under the cursor and to the right
 ;; under X, instead of the default, backspace behavior.
@@ -95,4 +98,5 @@
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
 
-(tool-bar-mode nil)
+(tool-bar-mode -1)
+(menu-bar-mode -1)

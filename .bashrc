@@ -813,7 +813,6 @@ fi
 
 if [ -n "${DISPLAY}" ] ; then
     caps-to-ctrl
-    xrdb ~/.Xdefaults
 fi
 
 if [ "${PLATFORM}" = "Linux" ] ; then
