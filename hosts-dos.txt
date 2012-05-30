@@ -1,0 +1,9 @@
+hardin
+rama
+mallow
+firewall
+services
+fs
+mycroft
+mycroft-wired
+kovacs

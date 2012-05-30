@@ -1,0 +1,5 @@
+--langmap=Sh:+(functions)
+--langmap=Sh:+(config-sample)
+--langmap=Sh:+.shlib
+--langmap=Sh:+(.bashrc)
+--langmap=Sh:+(.profile)
