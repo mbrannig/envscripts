@@ -56,13 +56,17 @@ function parse_hg_branch() {
 }
 
 function parse_bzr_branch() {
-    bzr nick 2> /dev/null 
+    local tmp
+    tmp=$( bzr nick 2> /dev/null )
+    if [ -n "${tmp}" ] ; then
+	echo -n "bzr:${tmp}" 
+    fi
 }
 
 function parse_cvs_branch() {
     if [ -e CVS ] ; then
 	# cat CVS/Entries  | cut -d'/' -f6 | head -1 | sed -e 's/^T//g'
-        CVSBRANCH=`cat CVS/Entries  | cut -d'/' -f6 | head -1 | sed -e 's/^T//g'` ; if [ "$CVSBRANCH" != "" ] ; then echo "$CVSBRANCH" ; else echo -ne "HEAD " ; fi
+        CVSBRANCH=`cat CVS/Entries  | cut -d'/' -f6 | head -1 | sed -e 's/^T//g'` ; if [ "$CVSBRANCH" != "" ] ; then echo "cvs:$CVSBRANCH" ; else echo -ne "cvs:HEAD " ; fi
     fi
 }
 
@@ -72,7 +76,7 @@ function get_branch_information() {
 #        parse_git_branch
 #        parse_hg_branch
 	parse_bzr_branch
-	__git_ps1 "%s "
+	__git_ps1 "git:%s "
     fi
 }
 
@@ -96,7 +100,7 @@ function exitstatus {
 	EXITSTATUS="$?"
 	COLOR=${CYAN}
 	LAST=" \$>"
-	BRANCH_NAME="${GREEN}${BOLD}[Branch:$(get_branch_information)]${COLOR}"
+	BRANCH_NAME="${GREEN}${BOLD}[$(get_branch_information)]${COLOR}"
 	CHROOT_PROMPT="${GREEN}${BOLD}[Jail:$(get_chroot)]${COLOR}"
 	SF_PREFIX_PROMPT="${GREEN}${BOLD}[SF_PREFIX:${SF_PREFIX}]${COLOR}"
 	loadavg
@@ -111,9 +115,7 @@ function exitstatus {
 	PS1="${PURPLE}${BOLD}\u@\h (${PLATFORM} ${ARCH}) ${CHROOT_PROMPT} ${BRANCH_NAME} ${SF_PREFIX_PROMPT} ${one} ${five} ${fifteen} ${OFF}\n${EXIT_PROMPT}:${COLOR}\w${EXIT_OFF}${LAST} ${OFF}"
 
 	PS2="${BOLD}>${OFF} "
-	if [ -n "${CHROOT_NAME}" ] ; then
-	    xtitle "${SHORTHOST}:${CHROOT_NAME}"
-	fi
+	xtitle
 }
 
 function print {
@@ -176,34 +178,6 @@ function fix-dns {
 	sudo sed -i -e '/domain/ d' -e 's/search.*$/search denofslack.org sourcefire.com sfeng.sourcefire.com/g' /etc/resolv.conf
 }
 
-function hold {
-    SFNETWORKS=(
-	"10.1.0.0/255.255.0.0/16"
-	"10.2.0.0/1255.255.0.0/6"
-	"10.4.0.0/255.255.0.0/16"
-	"10.5.0.0/255.255.0.0/16"
-	"10.6.0.0/255.255.0.0/16"
-	"10.11.0.0/255.255.0.0/16"
-	"192.168.0.0/255.255.0.0/16"
-	"172.25.0.0/255.255.0.0/16"
-    )
-
-    i=0
-    for NETWORK in "${SFNETWORKS[@]}" ; do
-	echo "Configuring ${NETWORK} for VPN"
-	export CISCO_SPLIT_INC_${i}_ADDR=`echo $NETWORK | cut -d '/' -f 1`
-	export CISCO_SPLIT_INC_${i}_MASK=`echo $NETWORK | cut -d '/' -f 2`
-	export CISCO_SPLIT_INC_${i}_MASKLEN=`echo -p $NETWORK | cut -d '/' -f 3`
-	i=`expr $i + 1`
-    done
-    export CISCO_SPLIT_INC=$i
-    echo "We have ${CISCO_SPLIT_INC} networks"
-    if [ -n "$CISCO_DEF_DOMAIN" ] ; then
-	export CISCO_DEF_DOMAIN="$CISCO_DEF_DOMAIN cm.sourcefire.com englab.sourcefire.com sfeng.sourcefire.com denofslack.org"
-    fi
-   
-}
-
 function connect-sf {
     local PID=$( pgrep openconnect )
     local DNSPID=$( pgrep dnsmasq )
@@ -262,9 +236,21 @@ function sf_cvs()
 
 function xtitle()      # Adds some text in the terminal frame.
 {
+
+    if [ -n "${CHROOT_NAME}" ] ; then
+	title="${SHORTHOST}:${CHROOT_NAME}"
+    else
+	if [ "${USER}" = "mbrannig" ] ; then
+	    title="${SHORTHOST}" 
+	else
+	    title="${USER}@${SHORTHOST}" 
+	fi	
+    fi
+
+
     case "$TERM" in
         *term | rxvt)
-            echo -n -e "\033]0;$*\007" ;;
+            echo -n -e "\033]0;${title}\007" ;;
         *)  
             ;;
     esac
@@ -281,8 +267,10 @@ function _branch_list()
     local tmp
     local list
     for i in ${BRANCH_REPOS} ; do
-	tmp=$(cd ~/src/WORK/${i} ; find . -maxdepth 1 -type d ! -name ".bzr" -printf "%f\n" | grep -v "^\." | xargs )
-	list="$list $tmp"
+	for j in tracking bugfix feature ; do 
+	    tmp=$(cd ~/src/WORK/${i}/${j} ; find . -maxdepth 1 -type d ! -name ".bzr" -printf "${i}/${j}/%f\n" | grep -v "^\." | xargs )
+	    list="$list $tmp"
+	done
     done
     echo "${BRANCHES} ${list}"
 }
@@ -302,12 +290,6 @@ function _branches()
     fi 
 }
 
-function _var_functions()
-{
- echo "foo"   
-
-}
-
 function br()
 {
     local dir=$1
@@ -325,222 +307,12 @@ function br()
     echo "No branch directory for $1!"
 }
 
-function get_remote_mac()
-{
-    local HOST=$1
-
-    arping -c 1 -q ${HOST} 2> /dev/null
-    if [ $? -ne 0 ] ; then
-	MAC=
-	return 1
-    else
-	MAC=$( arp ${HOST} | tail -1 | awk -F' ' '{print $3}' )
-    fi
-
-}
-
-function localboot()
-{
-    local HOST=$1
-
-    get_remote_mac ${HOST}
-
-    if [ $? -ne 0 ] ; then
-	echo "Unable to get mac for ${HOST}"
-	return 1
-    fi
-
-    local mac=$(echo "01-${MAC}" | sed -e 's/:/-/g' | tr 'A-Z' 'a-z' )
-
-    rm -vf /nfs/netboot/sf-linux-os/tftpboot/pxelinux.cfg/${mac}
-    cp -vf /nfs/netboot/sf-linux-os/install-configs/localboot.cfg /nfs/netboot/sf-linux-os/tftpboot/pxelinux.cfg/${mac}
-    chmod -v 777 /nfs/netboot/sf-linux-os/tftpboot/pxelinux.cfg/${mac}
-
-}
-
-function delete_netboot()
-{
-    local HOST=$1
-
-    get_remote_mac ${HOST}
-
-    if [ $? -ne 0 ] ; then
-	echo "Unable to get mac for ${HOST}"
-	return 1
-    fi
-
-    local mac=$(echo "01-${MAC}" | sed -e 's/:/-/g' | tr 'A-Z' 'a-z' )
-
-    rm -vf /nfs/netboot/sf-linux-os/tftpboot/pxelinux.cfg/${mac}
-    rm -vrf /nfs/netboot/sf-linux-os/install-configs/${mac}
-}
-function delete_netboot_mac()
-{
-    local MAC=$1
-
-    local mac=$(echo "01-${MAC}" | sed -e 's/:/-/g' | tr 'A-Z' 'a-z' )
-
-    rm -vf /nfs/netboot/sf-linux-os/tftpboot/pxelinux.cfg/${mac}
-    rm -vrf /nfs/netboot/sf-linux-os/install-configs/${mac}
-}
-
-
-
-function pxe_mac()
-{
-
-    local HOST=$1
-
-    get_remote_mac ${HOST}
-
-    if [ $? -ne 0 ] ; then
-	echo "unable to get mac for ${HOST}"
-	return 1
-    fi
-
-    local mac=$(echo ${MAC} | sed -e 's/:/-/g' | tr 'A-Z' 'a-z' )
-
-    echo "01-${mac}"
-}
-
-function get_mac()
-{
-
-   local HOST=$1
-
-    get_remote_mac ${HOST}
-
-    if [ $? -ne 0 ] ; then
-	echo "unable to get mac for ${HOST}"
-	return 1
-    fi
-
-
-    local mac=$(echo ${MAC} | tr 'a-z' 'A-Z' )
-
-    echo "${mac}"
-}
-
-function fix_integ()
-{
-    INTEG_FILE=$1
-    
-    if [ ! -f ${INTEG_FILE} ] ; then
-	echo "You must have an integ file"
-	exit 1
-    fi
-
-    sed -i -e 's/SRV=.*$/SRV=10.4.12.10/g' ${INTEG_FILE}
-    sed -i -e 's/%%PATH%%//g' ${INTEG_FILE}
-    
-
-}
-
-function setup_build()
-{
-    PXE_FILE=$1
-    INTEG_FILE=$2
-    HOST=$3
-    
-    if [ ! -f ${PXE_FILE} ] ; then
-	echo "You must have an pxe_file" 
-	exit 1
-    fi
-    
-    if [ ! -f ${INTEG_FILE} ] ; then
-	echo "You must have an integ file"
-	exit 1
-    fi
-
-    sed -i -e 's/SRV=.*$/SRV=10.4.12.10/g' ${INTEG_FILE}
-    sed -i -e 's/%%PATH%%//g' ${INTEG_FILE}
-    
-    if [ -z "${HOST}" ] ; then
-	echo "You must supply a host"
-	exit 1
-    fi
-    
-    FILENAME=$( pxe_mac ${HOST} )
-    
-    INTEG="INTEGCONF=10.4.12.10/${INTEG_FILE}"
-    eval ${INTEG}
-    echo
-    echo "Using ${FILENAME} for ${HOST}, integ line is ${INTEG}"
-    echo
-    if ask "Copy ${PXE_FILE} to ${FILENAME}" ; then
-	cp -v -f ${PXE_FILE} /nfs/netboot/sf-linux-os/tftpboot/pxelinux.cfg/${FILENAME}
-	chmod -v 777 /nfs/netboot/sf-linux-os/tftpboot/pxelinux.cfg/${FILENAME}
-	sed -i -e "/append/ s,$, $INTEG,g" /nfs/netboot/sf-linux-os/tftpboot/pxelinux.cfg/${FILENAME}
-	cat /nfs/netboot/sf-linux-os/tftpboot/pxelinux.cfg/${FILENAME}
-    fi
-    echo
-    echo "Please netboot ${HOST}"
-    echo
-    
-}
-
-function setup_os_build()
-{
-    PXE_FILE=$1
-    INSTALL_FILE=$2
-    HOST=$3
-    
-    if [ ! -f ${PXE_FILE} ] ; then
-	echo "You must have an pxe_file" 
-	exit 1
-    fi
-    
-    if [ ! -f ${INSTALL_FILE} ] ; then
-	echo "You must have an install file"
-	exit 1
-    fi
-
-    if [ -z "${HOST}" ] ; then
-	echo "You must supply a host"
-	exit 1
-    fi
-    
-    FILENAME=$( pxe_mac ${HOST} )
-    DIRNAME=$( get_mac ${HOST} )
-    
-    if ask "Copy ${PXE_FILE} to ${FILENAME}" ; then
-	cp -v -f ${PXE_FILE} /nfs/netboot/sf-linux-os/tftpboot/pxelinux.cfg/${FILENAME}
-	chmod -v 777 /nfs/netboot/sf-linux-os/tftpboot/pxelinux.cfg/${FILENAME}
-	sed -i -e "/append/ s,$, $INTEG,g" /nfs/netboot/sf-linux-os/tftpboot/pxelinux.cfg/${FILENAME}
-	cat /nfs/netboot/sf-linux-os/tftpboot/pxelinux.cfg/${FILENAME}
-
-	mkdir -pv /nfs/netboot/sf-linux-os/install-configs/${DIRNAME}
-	cp -vf ${INSTALL_FILE} /nfs/netboot/sf-linux-os/install-configs/${DIRNAME}/auto-install.cfg
-	chmod -vR 777  /nfs/netboot/sf-linux-os/install-configs/${DIRNAME}
-
-    fi
-    echo
-    echo "Please netboot ${HOST}"
-    echo    
-}
 
 function add_host()
 {
     if ! grep ${1} ${HOST_LIST_FILE} >& /dev/null ; then
 	echo "$1" >> ${HOST_LIST_FILE}
     fi
-}
-
-
-function reboot_wait()
-{
-    if [ -f ${REPO}/reboot-system.expect ] ; then
-	${REPO}/reboot-system.expect $1 $2 $3
-    fi
-    local port=443
-    if [ -n "$4" ] ; then
-	port=$4
-    fi
-
-    wait_for_shutdown $1 
-    wait_for_port $1 $port
-    send_mail
-
 }
 
 
@@ -563,38 +335,6 @@ progress()
     
     echo -e "\b$3"
 }
-
-
-wait_for_shutdown()
-{
-    local HOST=$1
-    local keep_going
-    keep_going=0
-
-    while [ $keep_going -eq 0 ]  ; do
-	ping -c 1 ${HOST} >& /dev/null
-	if [ $? -ne 0 ] ; then
-	    keep_going=1
-	    return 0
-	fi
-	sleep 5
-    done
- 
-
-}
-
-send_mail()
-{
-    echo | msmtp -C ${REPO}/msmtprc -f ${USER}@sfeng.sourcefire.com ${USER}@sourcefire.com <<EOF
-Subject: Your install of ${HOST} is complete
-To: ${USER}@sourcefire.com
-From: install@sfeng.sourcefire.com
-
-Your install of ${HOST} in complete.
-EOF
-
-}
-
 
 function copy_iso()
 {
@@ -619,22 +359,9 @@ function copy_iso()
 
 }
 
-function copy_tree()
-{
-    local src=$1
-    local dst=$2
-
-    local dir=$( dirname $1)
-    
-    mkdir -vp $dst/$dir
-
-    cp -av $src $dst/$dir
-
-}
-
 function update-bashrc()
 {
-    (cd ${REPO} ; bzr update )
+    (cd ${REPO} ; git pull )
 }
 
 function commit-bashrc()
@@ -644,33 +371,9 @@ function commit-bashrc()
 	return 0
     fi
 
-    (cd ${REPO} ; bzr commit -m "$1" )
+    (cd ${REPO} ; git commit -a "$1" ; git push )
 }
 
-INET_NTOA() { 
-    local IFS=. num quad ip e
-    num=$1
-    for e in 3 2 1
-    do
-        (( quad = 256 ** e))
-        (( ip[3-e] = num / quad ))
-        (( num = num % quad ))
-    done
-    ip[3]=$num
-    echo "${ip[*]}"
-}
-
-INET_ATON ()
-{
-    local IFS=. ip num e
-    ip=($1)
-    for e in 3 2 1
-    do
-        (( num += ip[3-e] * 256 ** e ))
-    done
-    (( num += ip[3] ))
-    echo $num
-}
 
 function slackinstall()
 {
@@ -699,75 +402,6 @@ function slackupgrade()
 	    local list=$(echo ${PKG} | xargs)
 	    sudo upgradepkg ${list}
 	fi
-
-}
-
-
-function go_jail()
-{
-    local jail=$1
-
-    if [ -d $1/lib64 ] ; then
-	sudo -i chroot $1 /bin/bash -li
-    else
-	setarch i686 sudo -i chroot $1 /bin/bash -li
-    fi
-
-}
-
-function build_jail()
-{
-    local vb=$1
-    local name=$2
-    local jailloc=/Jails
-    local ospath=/nfs/netboot/sf-linux-os
-    local release
-    local NAME
-
-    if [ -d ${ospath}/Development/${vb} ] ; then
-        release=Development
-    elif [ -d ${ospath}/Testing/${vb} ] ; then
-        release=Testing
-    elif [ -d ${ospath}/Release/${vb} ] ; then
-        release=Release
-    else
-	echo "Unable to find ${vb} in any release area of ${ospath}"
-    fi
-
-    if [ -n "${name}" ] ; then
-	NAME=-name ${name}
-    else
-	NAME=
-    fi
-
-    ./create_jail.sh -jail ${jailloc} -os ${vb} -arch i386 -release ${release} ${NAME}
-    ./create_jail.sh -jail ${jailloc} -os ${vb} -arch x86_64 -release ${release} ${NAME}
-
-}
-
-function delete_jail()
-{
-    local jail=$1
-
-    if [ -f ${jail}/etc/chroot_name ] ; then
-	local mounts=(/proc /nfs/netboot  /nfs/saruman /vol/home1/home)
-    else
-	echo "The jail ${jail} is not a jail"
-    fi
-
-}
-
-function any_jails_mouting()
-{
-    local jailloc=/Jails
-    local list=$( find ${jailloc} -maxdepth 1 -type d )
-    for i in ${list} ; do
-	if [ -f ${i}/etc/chroot_name ] ; then
-	    echo "Checking ${i}"
-	    sudo chroot ${i} "df"
-	    echo "******"
-	fi
-    done
 
 }
 
@@ -836,8 +470,8 @@ elif [ "${PLATFORM}" = "Darwin" ] ; then
 fi
 
 PROMPT_COMMAND=exitstatus
-BRANCH_REPOS="OS BUILD_SCRIPTS SEU 3D INSTALLER MODEL-PACK SnortBuild"
-BRANCHES="MODEL-PACK"
+BRANCH_REPOS="OS 3D"
+BRANCHES=""
 
 export PATH=~/envscripts/bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/sbin:/sbin:/bin:/usr/bin:/usr/local/bin::/usr/bin/X11:${EXTRAPATH}
 export EDITOR=vi
@@ -848,11 +482,6 @@ export LANGUAGE=C
 export LC_ALL=C
 export LANG=C
 
-if [ "${USER}" = "mbrannig" ] ; then
-    xtitle "${SHORTHOST}" 
-else
-    xtitle "${USER}@${SHORTHOST}" 
-fi	
 
 set -o emacs
 set -o histexpand
@@ -899,7 +528,6 @@ complete -A job -P '%'     fg jobs disown
 complete -A directory  mkdir rmdir
 complete -A directory   -o default cd
 
-complete -F _vars_functions unset
 
 # bzr
 function _bzr_commands() 
@@ -924,4 +552,4 @@ function _bzr()
 
 complete -F _bzr -o default bzr
 
-
+xtitle
