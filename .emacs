@@ -1,6 +1,8 @@
 (set-background-color "DarkSlateGray")
 (set-foreground-color "Wheat")
 (set-default-font "Ubuntu Mono-10")
+(set-cursor-color "#da70d6")
+(set-mouse-color "#da70d6")
 ;; Red Hat Linux default .emacs initialization file
 ;; Adds the ~/.xemacs directory to the load path
 (setq load-path (cons (expand-file-name "~/envscripts/.emacs.d/") load-path))
