@@ -100,9 +100,24 @@ function exitstatus {
 	EXITSTATUS="$?"
 	COLOR=${CYAN}
 	LAST=" \$>"
-	BRANCH_NAME="${GREEN}${BOLD}[$(get_branch_information)]${COLOR}"
-	CHROOT_PROMPT="${GREEN}${BOLD}[Jail:$(get_chroot)]${COLOR}"
-	SF_PREFIX_PROMPT="${GREEN}${BOLD}[SF_PREFIX:${SF_PREFIX}]${COLOR}"
+
+	BRANCH_INFO=$(get_branch_information)
+	if [ -n "${BRANCH_INFO}" ] ; then
+	    BRANCH_NAME="${GREEN}${BOLD}[$(get_branch_information)]${COLOR}"
+	else
+	    BRANCH_NAME=
+	fi
+	get_chroot
+	if [ -n "${CHROOT_NAME}" ] ; then
+	    CHROOT_PROMPT="${GREEN}${BOLD}[Jail:${CHROOT_NAME}]${COLOR}"
+	else
+	    CHROOT_PROMPT=
+	fi
+	if [ -n "${SF_PREFIX}" ] ; then
+	    SF_PREFIX_PROMPT="${GREEN}${BOLD}[SF_PREFIX:${SF_PREFIX}]${COLOR}"
+	else
+	    SF_PREFIX_PROMPT=
+	fi
 	loadavg
 	if [ "$EXITSTATUS" -eq "0" ] ; then
 		EXIT_PROMPT=${EXITSTATUS}
@@ -432,7 +447,7 @@ function screenhelp()
 	cat ~/repo/mbrannig/screen.txt
 }
 
-function get_chroot
+get_chroot
 
 if ! bash --version | grep 2.05 >& /dev/null ; then
     source ${REPO}/.bashrc-v3-only
@@ -459,7 +474,9 @@ else
 fi
 
 if [ -n "${DISPLAY}" ] ; then
-    caps-to-ctrl
+    if [ "${PLATFORM}" != "Darwin" ] ; then
+	caps-to-ctrl
+    fi
 fi
 
 if [ "${PLATFORM}" = "Linux" ] ; then
