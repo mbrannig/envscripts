@@ -107,7 +107,7 @@ function exitstatus {
 	else
 	    BRANCH_NAME=
 	fi
-	get_chroot
+	get_chroot > /dev/null
 	if [ -n "${CHROOT_NAME}" ] ; then
 	    CHROOT_PROMPT="${GREEN}${BOLD}[Jail:${CHROOT_NAME}]${COLOR}"
 	else
