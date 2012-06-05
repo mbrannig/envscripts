@@ -283,7 +283,7 @@ function _branch_list()
     local list
     for i in ${BRANCH_REPOS} ; do
 	for j in tracking bugfix feature ; do 
-	    tmp=$(cd ~/src/WORK/${i}/${j} ; find . -maxdepth 1 -type d ! -name ".bzr" -printf "${i}/${j}/%f\n" | grep -v "^\." | xargs )
+	    tmp=$(cd ~/src/WORK/${i}/${j} ; find . -maxdepth 1 -type d ! -name ".bzr" -printf "${j}/%f\n" | grep -v "^\." | xargs )
 	    list="$list $tmp"
 	done
     done
@@ -488,7 +488,6 @@ fi
 
 PROMPT_COMMAND=exitstatus
 BRANCH_REPOS="OS 3D"
-BRANCHES=""
 
 export PATH=~/envscripts/bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/sbin:/sbin:/bin:/usr/bin:/usr/local/bin::/usr/bin/X11:${EXTRAPATH}
 export EDITOR=vi
@@ -524,7 +523,7 @@ alias mv="mv -i"
 alias xr="xrdb ${REPO}/emacs.defaults"
 alias help="apropos"
 alias reup="source ${REPO}/.bashrc"
-#alias grep="egrep --color"
+alias grep="egrep --color"
 
 ## completes
 
