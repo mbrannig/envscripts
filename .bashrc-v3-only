@@ -1,3 +1,4 @@
+# -*- sh -*-
 function delete_key()
 {
     local host
@@ -14,7 +15,8 @@ function delete_key()
     ssh-keygen -R ${host}
     ssh-keygen -R ${ip}
 }
-function rsh()
+
+function rs()
 {
     local ARG=$1
     local host
@@ -31,16 +33,14 @@ function rsh()
 	    user=$3
 	fi
     fi
-
-    ssh ${user}@${host}
-
-    if [ "${USER}" = "mbrannig" ] ; then
-        xtitle "${SHORTHOST}" 
+    echo "Shelling for ${user} @ ${host}"
+    if [ "${user}" = "${USER}" ] ; then
+        xtitle "${host}" 
     else
-        xtitle "${USER}@${SHORTHOST}" 
+        xtitle "${user}@${host}" 
     fi	
 
-
+    ssh ${user}@${host}
 }
 
 function wait_for_port()

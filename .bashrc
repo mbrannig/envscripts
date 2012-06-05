@@ -252,14 +252,19 @@ function sf_cvs()
 function xtitle()      # Adds some text in the terminal frame.
 {
 
-    if [ -n "${CHROOT_NAME}" ] ; then
-	title="${SHORTHOST}:${CHROOT_NAME}"
-    else
-	if [ "${USER}" = "mbrannig" ] ; then
-	    title="${SHORTHOST}" 
+    if [ -z "$1" ] ; then
+
+	if [ -n "${CHROOT_NAME}" ] ; then
+	    title="${SHORTHOST}:${CHROOT_NAME}"
 	else
-	    title="${USER}@${SHORTHOST}" 
-	fi	
+	    if [ "${USER}" = "mbrannig" ] ; then
+		title="${SHORTHOST}" 
+	    else
+		title="${USER}@${SHORTHOST}" 
+	    fi	
+	fi
+    else
+	title="$1"
     fi
 
 
