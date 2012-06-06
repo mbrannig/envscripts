@@ -114,7 +114,8 @@ function exitstatus {
 	    CHROOT_PROMPT=
 	fi
 	if [ -n "${SF_PREFIX}" ] ; then
-	    SF_PREFIX_PROMPT="${GREEN}${BOLD}[SF_PREFIX:${SF_PREFIX}]${COLOR}"
+	    prefix=${SF_PREFIX#/var/tmp/mab/}
+	    SF_PREFIX_PROMPT="${GREEN}${BOLD}[SF_PREFIX:${prefix}]${COLOR}"
 	else
 	    SF_PREFIX_PROMPT=
 	fi
@@ -269,7 +270,7 @@ function xtitle()      # Adds some text in the terminal frame.
 
 
     case "$TERM" in
-        *term | rxvt)
+        *term | rxvt | xterm-* )
             echo -n -e "\033]0;${title}\007" ;;
         *)  
             ;;
@@ -503,6 +504,11 @@ export LANGUAGE=C
 export LC_ALL=C
 export LANG=C
 
+if [ ${TERM} == "xterm" ] ; then
+    if [ "${PLATFORM}" != "Darwin" ] ; then
+	export TERM=xterm-256color
+    fi
+fi
 
 set -o emacs
 set -o histexpand
@@ -529,6 +535,7 @@ alias xr="xrdb ${REPO}/emacs.defaults"
 alias help="apropos"
 alias reup="source ${REPO}/.bashrc"
 alias grep="egrep --color"
+alias rsh="rs"
 
 ## completes
 
