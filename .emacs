@@ -119,3 +119,5 @@
 
  (require 'recentf)
     (recentf-mode 1)
+
+(require 'magit)

@@ -28,7 +28,7 @@ export REPO=~/envscripts
 
 PLATFORM=$(uname )
 ARCH=$(uname -m)
-
+#export PROMPT_DIRTRIM=2
 
 # colors
 BOLD="\[\033[1m\]"
@@ -119,7 +119,7 @@ function exitstatus {
 	else
 	    SF_PREFIX_PROMPT=
 	fi
-	loadavg
+#	loadavg
 	if [ "$EXITSTATUS" -eq "0" ] ; then
 		EXIT_PROMPT=${EXITSTATUS}
 		EXIT_OFF=
@@ -128,9 +128,9 @@ function exitstatus {
 		EXIT_PROMPT="${RED}${EXITSTATUS}${COLOR}"
 		EXIT_OFF="${OFF}${RED}"
 	fi
-	PS1="${PURPLE}${BOLD}\u@\h (${PLATFORM} ${ARCH}) ${CHROOT_PROMPT} ${BRANCH_NAME} ${SF_PREFIX_PROMPT} ${one} ${five} ${fifteen} ${OFF}\n${EXIT_PROMPT}:${COLOR}\w${EXIT_OFF}${LAST} ${OFF}"
+	export PS1="${PURPLE}${BOLD}\u@\h (${PLATFORM} ${ARCH})${CHROOT_PROMPT}${BRANCH_NAME}${SF_PREFIX_PROMPT}${OFF}\n${EXIT_PROMPT}:${COLOR}\w${EXIT_OFF}${LAST} ${OFF}"
 
-	PS2="${BOLD}>${OFF} "
+	export PS2="${BOLD}>${OFF} "
 	xtitle
 }
 
