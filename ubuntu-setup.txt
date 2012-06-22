@@ -1,0 +1,71 @@
+Install:
+
+apt-get install python-software-properties emacs23-nox schroot vim autofs
+multitail cvs tcsh msmtp 
+apt-get install 
+
+
+SF Install:
+
+sf-autofs
+build-jail
+build-tools
+release-ims
+
+PPA:
+add-apt-repository ppa:mercurial-ppa/releases
+add-apt-repository ppa:bzr/ppa
+add-apt-repository ppa:git-core/ppa
+apt-get install bzr bzrtools mercurial git
+
+
+
+Users:
+build:x:5001:2010:Build User:/nfs/home/build:/bin/tcsh
+vrtbuild:x:1210:1210::/nfs/home/vrtbuild:/bin/bash
+snortbuild:x:5007:5008::/nfs/home/snortbuild:/bin/bash
+vdbbuild:x:5010:2001::/nfs/home/vdbbuild:/bin/bash
+build:*:15407:0:99999:7:::
+vrtbuild:*:12856:0:99999:7:::
+snortbuild:*:13018:0:99999:7:::
+vdbbuild:*:14588:0:99999:7:::
+
+Groups:
+add to admin build,mbrannig,vrtbuild,snortbuild,vdbbuild
+build:x:2010:mbrannig,mab,vrtbuild,snortbuild,vdbbuild
+devteam:!:2006:mbrannig,build,vrtbuild,snortbuild,vdbbuild
+cmpush:!:5010:mbrannig,build,vrtbuild,snortbuild,vdbbuild
+snortbuild:x:5008:mbrannig,build,vrtbuild,snortbuild,vdbbuild
+vrtbuild:x:1210:mbrannig,build,snortbuild,vdbbuild
+
+
+
+LDAP:
+add custom libldap and ldaputils for openssl
+
+apt-get install build-essential debhelper libdb4.8-dev libgcrypt-dev
+libgnutls-dev unixodbc-dev libncurses5-dev libperl-dev libsasl2-dev libslp-dev
+libltdl-dev libkrb5-dev libwrap0-dev debconf-utils po-debconf quilt
+autotools-dev libtool automake autoconf hardening-wrapper libssl-dev
+
+apt-get source openldap
+modify debian/configure.options to change gnutls to openssl
+modify debian/changelog to add new version
+
+dpkg-buildpackage -tc
+
+
+
+add packages: apt-get -q -y install ldap-auth-client nscd
+Don't configure with GUI
+/usr/sbin/auth-client-config -t nss -p lac_ldap
+copy ldap.conf, ldap.secret to /etc ; copy ldap/ldap.conf to
+/etc/ldap/ldap.conf
+cp cacert.pem sa@sourcefire.com-cert.pem sa@sourcefire.com-key.pem /etc/ssl/certs
+/etc/init.d/nscd restart
+
+cp crate-home-link.sh to /usr/local/bin
+
+echo "session optional pam_exec.so seteuid /usr/local/bin/create-home-link.sh"
+>> /etc/pam.d/common-session
+

@@ -1,0 +1,24 @@
+apt-get xfce4 xfdesktop4 xfdesktop4-data python-software-properties emacs23 schroot vim autofs multitail cvs tcsh msmtp openssh-server xvnc4viewer vnc4server xfce4-goodies xscreensaver-data xscreensaver-gl xscreensaver-data-extra xscreensaver-screensaver-bsod xscreensaver-gl-extra autokey-gtk build-essential xfwm4-themes autofs tomboy tmux openconnect sshfs
+
+add-apt-repository ppa:mercurial-ppa/releases
+add-apt-repository ppa:bzr/ppa
+add-apt-repository ppa:git-core/ppa
+apt-get install bzr bzrtools mercurial git
+
+
+apt-get purge liboverlay-scrollbar-*
+
+theme microcurve
+
+terminal text color R:255 G:191 Blue:0 Color name #FFBF00 Hue:45 Sat/Value:100
+	scroll bar left
+
+emacs colors: wheat/f5deb3 DarkSlateGray/2f4f4f Cursor/da70d6
+
+xpra - screen for x
+tmux/screen
+mosh
+vncserver on X display (over ssh)
+vmplayer remote console
+
+Remote kvm on 
