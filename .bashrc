@@ -210,7 +210,7 @@ function connect-sf {
 	echo "Starting dnsmasq..."
 	sudo dnsmasq -a 127.0.0.1 -h -R -S 192.168.2.1 -S /sourcefire.com/10.1.1.92 -S /sourcefire.com/10.1.1.220
 	echo -n "Mounting ender on ~/src..."
-	sshfs ender.sfeng.sourcefire.com:src ~/src -o uid=500,gid=500
+	sshfs ender.sfeng.sourcefire.com:src ~/src -o uid=${UID},gid=${GID}
 	echo "done"
     else
 	if ask "Disconnect from Sourcefire VPN ($PID)" ; then
@@ -507,6 +507,8 @@ export LESS="-ern"
 export LANGUAGE=C
 export LC_ALL=C
 export LANG=C
+#UID=$(id -u)
+GID=$(id -g)
 
 if [ ${TERM} == "xterm" ] ; then
     if [ "${PLATFORM}" != "Darwin" ] ; then
