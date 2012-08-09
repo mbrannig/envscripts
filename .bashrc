@@ -155,6 +155,10 @@ function sfp {
     fi
 }
 
+function resume {
+	tmux at -t ${1}
+}
+
 function mount-ender {
     if ping -c 1 ender.sfeng.sourcefire.com >& /dev/null ; then
 	if ! mount | grep ender.sfeng >& /dev/null ; then
@@ -206,7 +210,7 @@ function connect-sf {
 	echo "Starting dnsmasq..."
 	sudo dnsmasq -a 127.0.0.1 -h -R -S 192.168.2.1 -S /sourcefire.com/10.1.1.92 -S /sourcefire.com/10.1.1.220
 	echo -n "Mounting ender on ~/src..."
-	sshfs ender.sfeng.sourcefire.com:src ~/src -o uid=500,gid=500
+	sshfs ender.sfeng.sourcefire.com:src ~/src -o uid=${UID},gid=${GID}
 	echo "done"
     else
 	if ask "Disconnect from Sourcefire VPN ($PID)" ; then
@@ -495,7 +499,7 @@ fi
 PROMPT_COMMAND=exitstatus
 BRANCH_REPOS="OS 3D"
 
-export PATH=~/envscripts/bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/sbin:/sbin:/bin:/usr/bin:/usr/local/bin::/usr/bin/X11:${EXTRAPATH}
+export PATH=~/envscripts/bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/sbin:/sbin:/bin:/usr/bin:/usr/local/bin::/usr/bin/X11:${EXTRAPATH}:/nfs/saruman/build/intel/cce/10.1.015/bin
 export EDITOR=vi
 export VISUAL=vi
 export PAGER=less
@@ -503,6 +507,8 @@ export LESS="-ern"
 export LANGUAGE=C
 export LC_ALL=C
 export LANG=C
+#UID=$(id -u)
+GID=$(id -g)
 
 if [ ${TERM} == "xterm" ] ; then
     if [ "${PLATFORM}" != "Darwin" ] ; then
@@ -542,6 +548,7 @@ alias rsh="rs"
 complete -W '$(cd /var/tmp/mab ; "ls" -d BUILD-* | sed -e "s/BUILD-//g" )' sfp
 #complete -W '$(cd ~/src/WORK ; find IMS OS MODEL-PACK BUILD_SCRIPTS -maxdepth 1 -type d | xargs )' br
 complete -W '$(cd /etc/schroot/chroot.d ; "ls" )' schroot 
+complete -W '$(tmux ls -F "#{session_name}")' resume
 complete -F _branches br
 complete -A hostname   ssh ping localboot
 complete -W '${HOST_LIST}' ssh ping rsh localboot

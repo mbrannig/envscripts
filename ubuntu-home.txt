@@ -24,3 +24,6 @@ vmplayer remote console
 Remote kvm on 
 
 resolvconf -- remove link to resolv.conf for VPN use
+
+add c-l, c-r to WM configuration
+

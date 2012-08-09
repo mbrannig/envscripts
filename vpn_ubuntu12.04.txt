@@ -1,0 +1,10 @@
+Ubuntu 12.04 runs dnsmasq by default.
+
+/etc/NetworkManager/NetworkManager.conf:
+comment out dns=dnsmasq
+
+remove resolvconf and /etc/resolv.conf link
+
+disable /etc/default/dnsmash
+
+
