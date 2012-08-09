@@ -22,3 +22,5 @@ vncserver on X display (over ssh)
 vmplayer remote console
 
 Remote kvm on 
+
+resolvconf -- remove link to resolv.conf for VPN use
