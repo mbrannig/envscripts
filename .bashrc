@@ -155,6 +155,10 @@ function sfp {
     fi
 }
 
+function resume {
+	tmux at -t ${1}
+}
+
 function mount-ender {
     if ping -c 1 ender.sfeng.sourcefire.com >& /dev/null ; then
 	if ! mount | grep ender.sfeng >& /dev/null ; then
@@ -495,7 +499,7 @@ fi
 PROMPT_COMMAND=exitstatus
 BRANCH_REPOS="OS 3D"
 
-export PATH=~/envscripts/bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/sbin:/sbin:/bin:/usr/bin:/usr/local/bin::/usr/bin/X11:${EXTRAPATH}
+export PATH=~/envscripts/bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/sbin:/sbin:/bin:/usr/bin:/usr/local/bin::/usr/bin/X11:${EXTRAPATH}:/nfs/saruman/build/intel/cce/10.1.015/bin
 export EDITOR=vi
 export VISUAL=vi
 export PAGER=less
@@ -542,6 +546,7 @@ alias rsh="rs"
 complete -W '$(cd /var/tmp/mab ; "ls" -d BUILD-* | sed -e "s/BUILD-//g" )' sfp
 #complete -W '$(cd ~/src/WORK ; find IMS OS MODEL-PACK BUILD_SCRIPTS -maxdepth 1 -type d | xargs )' br
 complete -W '$(cd /etc/schroot/chroot.d ; "ls" )' schroot 
+complete -W '$(tmux ls -F "#{session_name}")' resume
 complete -F _branches br
 complete -A hostname   ssh ping localboot
 complete -W '${HOST_LIST}' ssh ping rsh localboot
