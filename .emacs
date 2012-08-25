@@ -121,3 +121,8 @@
     (recentf-mode 1)
 
 (require 'magit)
+
+(desktop-save-mode 1)
+(setq desktop-path '("~/.emacs.d/"))
+(setq desktop-dirname "~/.emacs.d/")
+(setq desktop-base-file-name "emacs-desktop")

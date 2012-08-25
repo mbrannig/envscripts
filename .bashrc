@@ -165,7 +165,7 @@ function mount-ender {
     if ping -c 1 ender.sfeng.sourcefire.com >& /dev/null ; then
 	if ! mount | grep ender.sfeng >& /dev/null ; then
 	    echo -n "Mounting ender on ~/src ... "
-	    sshfs ender.sfeng.sourcefire.com:src ~/src -o uid=${MYUID},gid=${MYGID}
+	    sshfs ender.sfeng.sourcefire.com:src/ ~/src -C -o uid=${MYUID},gid=${MYGID}
 	    echo " done"
 	else
 	    echo -n "Unmount ~/src ... "
@@ -182,7 +182,7 @@ function mount-netboot {
     if ping -c 1 ender.sfeng.sourcefire.com >& /dev/null ; then
         if ! mount | grep netboot >& /dev/null ; then
             echo -n "Mounting ender on ~/netboot ... "
-            sshfs ender.sfeng.sourcefire.com:/nfs/netboot ~/netboot -o uid=${MYUID},gid=${MYGID}
+            sshfs ender.sfeng.sourcefire.com:/nfs/netboot/ ~/netboot -C -o uid=${MYUID},gid=${MYGID}
             echo " done"
         else
             echo -n "Unmount ~/netboot ... "
@@ -212,7 +212,7 @@ function connect-sf {
 	echo "Starting dnsmasq..."
 	sudo dnsmasq -a 127.0.0.1 -h -R -S 192.168.2.1 -S /sourcefire.com/10.1.1.92 -S /sourcefire.com/10.1.1.220
 	echo -n "Mounting ender on ~/src..."
-	sshfs ender.sfeng.sourcefire.com:src ~/src -o uid=${MYUID},gid=${MYGID}
+	sshfs ender.sfeng.sourcefire.com:src/ ~/src -C -o uid=${MYUID},gid=${MYGID}
 	echo "done"
     else
 	if ask "Disconnect from Sourcefire VPN ($PID)" ; then
