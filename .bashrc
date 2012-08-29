@@ -158,6 +158,7 @@ function sfp {
 }
 
 function resume {
+	xtitle ${1}
 	tmux at -t ${1}
 }
 
@@ -278,6 +279,8 @@ function xtitle()      # Adds some text in the terminal frame.
     case "$TERM" in
         *term | rxvt | xterm-* )
             echo -n -e "\033]0;${title}\007" ;;
+	screen)
+	     echo -n -e "\033k${title}\033\\" ;;
         *)  
             ;;
     esac
