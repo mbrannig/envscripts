@@ -46,7 +46,7 @@ source ${REPO}/.git-completion.sh
 if [ -f /etc/bash_completion ] ; then source /etc/bash_completion ; fi
 
 export GIT_PS1_SHOWDIRTYSTATE=1
-export GIT_PS1_SHOWUNTRACKEDFILES=1
+export GIT_PS1_SHOWUNTRACKEDFILES=0
 export GIT_PS1_SHOWUPSTREAM="auto"
 
 function parse_git_branch () {
