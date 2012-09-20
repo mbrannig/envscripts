@@ -45,9 +45,9 @@ source ${REPO}/.git-completion.sh
 
 if [ -f /etc/bash_completion ] ; then source /etc/bash_completion ; fi
 
-export GIT_PS1_SHOWDIRTYSTATE=1
-export GIT_PS1_SHOWUNTRACKEDFILES=0
-export GIT_PS1_SHOWUPSTREAM="auto"
+export GIT_PS1_SHOWDIRTYSTATE=
+export GIT_PS1_SHOWUNTRACKEDFILES=
+export GIT_PS1_SHOWUPSTREAM=
 
 function parse_git_branch () {
     git name-rev HEAD 2> /dev/null | sed 's#HEAD\ \(.*\)# (git::\1)#'
@@ -75,10 +75,10 @@ function parse_cvs_branch() {
 function get_branch_information() {
     if [ "${PLATFORM}" == "Linux" ] ; then
         parse_cvs_branch
-#        parse_git_branch
+        parse_git_branch
 #        parse_hg_branch
 	parse_bzr_branch
-	__git_ps1 "git:%s "
+#	__git_ps1 "git:%s "
     fi
 }
 
@@ -158,6 +158,7 @@ function sfp {
 }
 
 function resume {
+	xtitle ${1}
 	tmux at -t ${1}
 }
 
@@ -260,24 +261,30 @@ function xtitle()      # Adds some text in the terminal frame.
 {
 
     if [ -z "$1" ] ; then
-
-	if [ -n "${CHROOT_NAME}" ] ; then
-	    title="${SHORTHOST}:${CHROOT_NAME}"
+	if [ -n "${TITLE}" ] ; then
+	    title=${TITLE}
 	else
-	    if [ "${USER}" = "mbrannig" ] ; then
-		title="${SHORTHOST}" 
+	    if [ -n "${CHROOT_NAME}" ] ; then
+		title="${SHORTHOST}:${CHROOT_NAME}"
 	    else
-		title="${USER}@${SHORTHOST}" 
-	    fi	
+		if [ "${USER}" = "mbrannig" ] ; then
+		    title="${SHORTHOST}" 
+		else
+		    title="${USER}@${SHORTHOST}" 
+		fi	
+	    fi
 	fi
     else
 	title="$1"
+	export TITLE=${title}
     fi
-
+    
 
     case "$TERM" in
         *term | rxvt | xterm-* )
             echo -n -e "\033]0;${title}\007" ;;
+	screen)
+	     echo -n -e "\033k${title}\033\\" ;;
         *)  
             ;;
     esac
@@ -375,12 +382,15 @@ function copy_iso()
 
     else
 	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*S3*iso ender:/var/www/iso
+	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*9900*iso ender:/var/www/iso
 
 	sed -i -e 's/SRV=.*$/SRV=10.4.12.10/g' -e 's/%%PATH%%//g' ${SF_PREFIX}/pxe-config/integration/Sourcefire*config
 	sed -i -e 's,INTEGCONF=.*/%%PATH%%/pxe-config/integration,INTEGCONF=10.4.12.10/integ,g' ${SF_PREFIX}/pxe-config/pxe/Sourcefire*cfg
 
 	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_*S3*config ender:/var/www/integ
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_*9900*config ender:/var/www/integ
 	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_*S3*cfg ender:/var/www/pxe
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_*9900*cfg ender:/var/www/pxe
     fi
 
 
@@ -501,7 +511,7 @@ fi
 PROMPT_COMMAND=exitstatus
 BRANCH_REPOS="OS 3D"
 
-export PATH=~/envscripts/bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/sbin:/sbin:/bin:/usr/bin:/usr/local/bin::/usr/bin/X11:${EXTRAPATH}:/nfs/saruman/build/intel/cce/10.1.015/bin
+export PATH=~/envscripts/bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/sbin:/sbin:/bin:/usr/bin:/usr/local/bin::/usr/bin/X11:${EXTRAPATH}:/nfs/saruman/build/intel/cce/10.1.015/bin:/usr/local/go/bin
 export EDITOR=vi
 export VISUAL=vi
 export PAGER=less
