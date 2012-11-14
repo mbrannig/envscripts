@@ -163,6 +163,10 @@ function resume {
 }
 
 function session {
+	if [ ! -x /usr/bin/tmux ] ; then
+		return
+	fi
+
 	if [ -z "${1}" ] ; then
 		echo "Available sessions are:"
 		tmux list-sessions
