@@ -3,3 +3,12 @@
 apt-get purge liboverlay-scrollbar-*
 
 vnc4server -geometry 1280x1024 &
+
+1. WHY: 
+2. FIX: 
+3. CODE: 
+4. IMPACT: 
+5. TEST: 
+6. DOCIMPACT: 
+7. REVIEWED BY:
+
