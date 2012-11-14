@@ -289,9 +289,9 @@ function xtitle()      # Adds some text in the terminal frame.
 		title="${SHORTHOST}:${CHROOT_NAME}"
 	    else
 		if [ "${USER}" = "mbrannig" ] ; then
-		    title="${SHORTHOST}${tmux_title}" 
+		    title="${SHORTHOST}" 
 		else
-		    title="${USER}@${SHORTHOST}${tmux_title}" 
+		    title="${USER}@${SHORTHOST}" 
 		fi	
 	    fi
 	fi
