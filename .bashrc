@@ -162,6 +162,24 @@ function resume {
 	tmux at -t ${1}
 }
 
+function session {
+	if [ -z "${1}" ] ; then
+		echo "Available sessions are:"
+		tmux list-sessions
+	else 
+		if [ -z "${TMUX}" ] ; then
+			if tmux has-session -t ${1} ; then
+				tmux attach-session -t ${1}
+			else
+				tmux new-session -s ${1}
+			fi
+		else
+			echo "Already in tmux session"
+		fi
+	fi
+
+}
+
 function mount-ender {
     if ping -c 1 ender.sfeng.sourcefire.com >& /dev/null ; then
 	if ! mount | grep ender.sfeng >& /dev/null ; then
@@ -268,9 +286,9 @@ function xtitle()      # Adds some text in the terminal frame.
 		title="${SHORTHOST}:${CHROOT_NAME}"
 	    else
 		if [ "${USER}" = "mbrannig" ] ; then
-		    title="${SHORTHOST}" 
+		    title="${SHORTHOST} (${TMUX_SESSION})" 
 		else
-		    title="${USER}@${SHORTHOST}" 
+		    title="${USER}@${SHORTHOST} (${TMUX_SESSION})" 
 		fi	
 	    fi
 	fi
@@ -526,6 +544,10 @@ if [ ${TERM} == "xterm" ] ; then
     fi
 fi
 
+if [ -n "${TMUX}" ] ; then
+	export TMUX_SESSION=$(tmux list-panes -F '#{session_name}')
+fi
+
 set -o emacs
 set -o histexpand
 set -o ignoreeof
@@ -559,6 +581,7 @@ complete -W '$(cd /var/tmp/mab ; "ls" -d BUILD-* | sed -e "s/BUILD-//g" )' sfp
 #complete -W '$(cd ~/src/WORK ; find IMS OS MODEL-PACK BUILD_SCRIPTS -maxdepth 1 -type d | xargs )' br
 complete -W '$(cd /etc/schroot/chroot.d ; "ls" )' schroot 
 complete -W '$(tmux ls -F "#{session_name}")' resume
+complete -W '$(tmux ls -F "#{session_name}")' session
 complete -F _branches br
 complete -A hostname   ssh ping localboot
 complete -W '${HOST_LIST}' ssh ping rsh localboot
@@ -598,3 +621,4 @@ function _bzr()
 complete -F _bzr -o default bzr
 
 xtitle
+session
