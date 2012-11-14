@@ -548,7 +548,9 @@ if [ ${TERM} == "xterm" ] ; then
 fi
 
 if [ -n "${TMUX}" ] ; then
-	export TMUX_SESSION=$(tmux list-panes -F '#{session_name}')
+	if [ -x /usr/bin/tmux ] ; then
+		export TMUX_SESSION=$(tmux list-panes -F '#{session_name}')
+	fi
 fi
 
 set -o emacs
