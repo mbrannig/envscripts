@@ -282,13 +282,16 @@ function xtitle()      # Adds some text in the terminal frame.
 	if [ -n "${TITLE}" ] ; then
 	    title=${TITLE}
 	else
+		if [ -n ${TMUX_SESSION} ] ; then
+			tmux_title=" (${TMUX_SESSION})"
+		fi
 	    if [ -n "${CHROOT_NAME}" ] ; then
 		title="${SHORTHOST}:${CHROOT_NAME}"
 	    else
 		if [ "${USER}" = "mbrannig" ] ; then
-		    title="${SHORTHOST} (${TMUX_SESSION})" 
+		    title="${SHORTHOST}${tmux_title}" 
 		else
-		    title="${USER}@${SHORTHOST} (${TMUX_SESSION})" 
+		    title="${USER}@${SHORTHOST}${tmux_title}" 
 		fi	
 	    fi
 	fi
