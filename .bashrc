@@ -162,7 +162,6 @@ function resume {
 	tmux at -t ${1}
 }
 
-
 function mount-sshfs {
 	local hd=$1
 	local mp=$2
@@ -203,7 +202,27 @@ function umount-sshfs {
 	elif [ ${PLATFORM} == "Darwin" ] ; then
 		umount $mp
 	fi
+}
 
+function session {
+	if [ ! -x /usr/bin/tmux ] ; then
+		return
+	fi
+
+	if [ -z "${1}" ] ; then
+		echo "Available sessions are:"
+		tmux list-sessions
+	else 
+		if [ -z "${TMUX}" ] ; then
+			if tmux has-session -t ${1} ; then
+				tmux attach-session -t ${1}
+			else
+				tmux new-session -s ${1}
+			fi
+		else
+			echo "Already in tmux session"
+		fi
+	fi
 }
 
 function mount-ender {
@@ -308,6 +327,9 @@ function xtitle()      # Adds some text in the terminal frame.
 	if [ -n "${TITLE}" ] ; then
 	    title=${TITLE}
 	else
+		if [ -n ${TMUX_SESSION} ] ; then
+			tmux_title=" (${TMUX_SESSION})"
+		fi
 	    if [ -n "${CHROOT_NAME}" ] ; then
 		title="${SHORTHOST}:${CHROOT_NAME}"
 	    else
@@ -417,12 +439,12 @@ progress()
 function copy_iso()
 {
     if [ "${ARCH}" = "i686" ] ; then
-	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_3D_Sensor_1000*iso ${SF_PREFIX}/iso/Sourcefire_3D_Sensor_2000*iso ${SF_PREFIX}/iso/Sourcefire_Defense_Center_1000*iso ender:/var/www/iso
+	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_3D_Device_1000*iso ${SF_PREFIX}/iso/Sourcefire_3D_Device_2000*iso ${SF_PREFIX}/iso/Sourcefire_Defense_Center_1000*iso ender:/var/www/iso
 
 	sed -i -e 's/SRV=.*$/SRV=10.4.12.10/g' -e 's/%%PATH%%//g' ${SF_PREFIX}/pxe-config/integration/Sourcefire*config
 
-	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_3D_Sensor_1000*config ${SF_PREFIX}/pxe-config/integration/Sourcefire_3D_Sensor_2000*config ${SF_PREFIX}/pxe-config/integration/Sourcefire_Defense_Center_1000*config ender:/var/www/integ
-	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_3D_Sensor_1000*cfg ${SF_PREFIX}/pxe-config/pxe/Sourcefire_3D_Sensor_2000*cfg ${SF_PREFIX}/pxe-config/pxe/Sourcefire_Defense_Center_1000*cfg ender:/var/www/pxe
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_3D_Device_1000*config ${SF_PREFIX}/pxe-config/integration/Sourcefire_3D_Device_2000*config ${SF_PREFIX}/pxe-config/integration/Sourcefire_Defense_Center_1000*config ender:/var/www/integ
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_3D_Device_1000*cfg ${SF_PREFIX}/pxe-config/pxe/Sourcefire_3D_Device_2000*cfg ${SF_PREFIX}/pxe-config/pxe/Sourcefire_Defense_Center_1000*cfg ender:/var/www/pxe
 
     else
 	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*S3*iso ender:/var/www/iso
@@ -570,6 +592,12 @@ if [ ${TERM} == "xterm" ] ; then
     fi
 fi
 
+if [ -n "${TMUX}" ] ; then
+	if [ -x /usr/bin/tmux ] ; then
+		export TMUX_SESSION=$(tmux list-panes -F '#{session_name}')
+	fi
+fi
+
 set -o emacs
 set -o histexpand
 set -o ignoreeof
@@ -603,6 +631,7 @@ complete -W '$(cd /var/tmp/mab ; "ls" -d BUILD-* | sed -e "s/BUILD-//g" )' sfp
 #complete -W '$(cd ~/src/WORK ; find IMS OS MODEL-PACK BUILD_SCRIPTS -maxdepth 1 -type d | xargs )' br
 complete -W '$(cd /etc/schroot/chroot.d ; "ls" )' schroot 
 complete -W '$(tmux ls -F "#{session_name}")' resume
+complete -W '$(tmux ls -F "#{session_name}")' session
 complete -F _branches br
 complete -A hostname   ssh ping localboot
 complete -W '${HOST_LIST}' ssh ping rsh localboot
@@ -642,3 +671,4 @@ function _bzr()
 complete -F _bzr -o default bzr
 
 xtitle
+session

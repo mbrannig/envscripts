@@ -12,11 +12,13 @@ SFNETWORKS=(
 	"172.25.0.0/255.255.0.0/16"
 )
 
-if [ ${PLATFORM} == "Darwin" ] ; then
-	VPN_SCRIPT=/opt/local/etc/vpnc/vpnc-script
-else
-	VPN_SCRIPT="/etc/vpnc/vpnc-script"
-fi
+#if [ ${PLATFORM} == "Darwin" ] ; then
+#	VPN_SCRIPT=/opt/local/etc/vpnc/vpnc-script
+#else
+#	VPN_SCRIPT="/etc/vpnc/vpnc-script"
+#fi
+VPN_SCRIPT=$(dirname $0)/vpn/vpnc-script
+
 export_split_tunnel()
 {
 		i=0

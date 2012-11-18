@@ -22,17 +22,18 @@ function rs()
     local host
     local user=${USER}
     if [[ ${ARG} =~ "@" ]] ; then
-	user=$( echo ${ARG} | cut -d'@' -f1 )
-	host=$( echo ${ARG} | cut -d'@' -f2 )
+		user=$( echo ${ARG} | cut -d'@' -f1 )
+		host=$( echo ${ARG} | cut -d'@' -f2 )
     else
-	host=${ARG}
+		host=${ARG}
     fi
 
     if [[ -n "$2" && "$2" = "-l" ]] ; then
-	if [ -n "$3" ] ; then
-	    user=$3
-	fi
+		if [ -n "$3" ] ; then
+	    	user=$3
+		fi
     fi
+    
     echo "Shelling for ${user} @ ${host}"
     if [ "${user}" = "${USER}" ] ; then
         xtitle "${host}" 
@@ -41,6 +42,35 @@ function rs()
     fi	
 
     ssh ${user}@${host}
+}
+
+
+function rsession()
+{
+	local ARG=$1
+    local host
+    local user=${USER}
+    if [[ ${ARG} =~ "@" ]] ; then
+		user=$( echo ${ARG} | cut -d'@' -f1 )
+		host=$( echo ${ARG} | cut -d'@' -f2 )
+    else
+		host=${ARG}
+    fi
+
+	if [ -n "$2" ] ; then
+		echo "Resuming session $2"
+	fi
+    
+	echo "Shelling for ${user} @ ${host}"
+    if [ "${user}" = "${USER}" ] ; then
+        xtitle "${host}" 
+    else
+        xtitle "${user}@${host}" 
+    fi	
+
+    #ssh -tt ${user}@${host} "tmux attach-session -t $2"
+	ssh -tt ${user}@${host} "( (tmux has-session -t $2 && tmux attach-session -t $2) || (tmux new-session -s $2) ) && exit 0"
+
 }
 
 function wait_for_port()
