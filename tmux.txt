@@ -5,6 +5,8 @@ tmux ls
 ^B l last window
 ^B , <name> name window
 ^B c new window
+^B w window list
+^B d detach
 
 tmux -- terminal multiplexer
 

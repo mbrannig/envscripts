@@ -1,6 +1,11 @@
 #!/bin/bash
 
 if [ ! -f /tmp/nosplit-tunnel ] ; then
+
+	killall dnsmasq
+	localns=$(grep nameserver /etc/resolv.conf.SAVE_VPN | head -1 | cut -d' ' -f2)
+	dnsmasq -a 127.0.0.1 -h -R -S ${localns} -S /sourcefire.com/10.1.1.92 -S /sourcefire.com/10.1.1.220
+
 	echo "#@VPNC_GENERATED@ mab vpn file" > /etc/resolv.conf
 	echo "nameserver 127.0.0.1" >> /etc/resolv.conf
 	echo "search denofslack.org sourcefire.com sfeng.sourcefire.com englab.sourcefire.com cm.sourcefire.com" >> /etc/resolv.conf

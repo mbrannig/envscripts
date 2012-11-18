@@ -1,0 +1,7 @@
+#!/bin/bash
+
+killall dnsmasq
+
+if [ -f /etc/resolv.conf.SAVE_VPN ] ; then
+		cp -f /etc/resolv.conf.SAVE_VPN /etc/resolv.conf
+fi

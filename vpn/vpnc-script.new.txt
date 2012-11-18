@@ -77,10 +77,10 @@ PATH=/sbin:/usr/sbin:$PATH
 
 OS="`uname -s`"
 
+HOOKS_DIR=/etc/vpnc
 DEFAULT_ROUTE_FILE=/var/run/vpnc/defaultroute
 RESOLV_CONF_BACKUP=/var/run/vpnc/resolv.conf-backup
 SCRIPTNAME=`basename $0`
-HOOKS_DIR=`dirname $0`
 
 # some systems, eg. Darwin & FreeBSD, prune /var/run on boot
 if [ ! -d "/var/run/vpnc" ]; then

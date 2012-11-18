@@ -162,6 +162,50 @@ function resume {
 	tmux at -t ${1}
 }
 
+
+function mount-sshfs {
+	local hd=$1
+	local mp=$2
+
+	local host
+	local md
+
+	host=$(echo $hd | cut -d: -f1)
+	md=$(echo $hd | cut -d: -f2)
+
+	if [ -z "${mp}" ] ; then
+		mp=$md
+	fi
+
+	if [ ${PLATFORM} == "Darwin" ] ; then
+		SSHFS_OPTIONS=",noappledouble,volname=$host-$mp"
+	fi
+
+	if ping -c 1 $host >& /dev/null ; then
+		if ! mount | grep $host >& /dev/null ; then
+			echo -n "Mounting $host : $md on $mp..."
+			sshfs $hd $mp -C -o uid=${MYUID},gid=${MYGID}${SSHFS_OPTIONS}
+			echo "done"
+		else
+			echo "$hd already mounted"
+		fi
+	else
+		echo "Unable able to reach $host"
+	fi
+
+
+}
+
+function umount-sshfs {
+	local mp=$1
+	if [ ${PLATFORM} == "Linux" ] ; then
+		fusermount -u $mp
+	elif [ ${PLATFORM} == "Darwin" ] ; then
+		umount $mp
+	fi
+
+}
+
 function mount-ender {
     if ping -c 1 ender.sfeng.sourcefire.com >& /dev/null ; then
 	if ! mount | grep ender.sfeng >& /dev/null ; then
@@ -206,23 +250,23 @@ function connect-sf {
     local DNSPID=$( pgrep dnsmasq )
     export USESPLITTUNNEL=1
     if [ -z "${PID}" ] ; then
-	echo "Connecting to sourcefire vpn...."
-	sudo openconnect -b -u mbrannig --authgroup=SF-STD -s /etc/vpnc/vpnc-script remote.sourcefire.com
-	sleep 2
-	[ -n "${DNSPID}" ] && sudo kill ${DNSPID}
-	echo "Starting dnsmasq..."
-	sudo dnsmasq -a 127.0.0.1 -h -R -S 192.168.2.1 -S /sourcefire.com/10.1.1.92 -S /sourcefire.com/10.1.1.220
-	echo -n "Mounting ender on ~/src..."
-	sshfs ender.sfeng.sourcefire.com:src/ ~/src -C -o uid=${MYUID},gid=${MYGID}
-	echo "done"
+		echo "Connecting to sourcefire vpn...."
+		sudo openconnect -b -u mbrannig --authgroup=SF-STD -s /etc/vpnc/vpnc-script remote.sourcefire.com
+		sleep 2
+		[ -n "${DNSPID}" ] && sudo kill ${DNSPID}
+		echo "Starting dnsmasq..."
+		sudo dnsmasq -a 127.0.0.1 -h -R -S 192.168.2.1 -S /sourcefire.com/10.1.1.92 -S /sourcefire.com/10.1.1.220
+		echo -n "Mounting ender on ~/src..."
+		sshfs ender.sfeng.sourcefire.com:src/ ~/src -C -o uid=${MYUID},gid=${MYGID}
+		echo "done"
     else
-	if ask "Disconnect from Sourcefire VPN ($PID)" ; then
-	    echo -n "Unmounting ender on ~/src..."
-	    fusermount -u ~/src
-	    echo -n "Disconnecting sourcefire vpn..."
-	    sudo kill ${PID} ${DNSPID}
-	    echo " done"
-	fi
+		if ask "Disconnect from Sourcefire VPN ($PID)" ; then
+		    echo -n "Unmounting ender on ~/src..."
+		    fusermount -u ~/src
+		    echo -n "Disconnecting sourcefire vpn..."
+		    sudo kill ${PID} ${DNSPID}
+		    echo " done"
+		fi
     fi
 
 }
