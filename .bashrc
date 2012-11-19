@@ -269,8 +269,8 @@ function connect-sf {
     if [ -z "${PID}" ] ; then
 		echo "Connecting to sourcefire vpn...."
 		sudo openconnect -b -u mbrannig --authgroup=SF-STD -s ~/envscripts/vpn/vpnc-script remote.sourcefire.com
-		mount-sshfs ender.sfeng.sourcefire.com:src
-		mount-sshfs ender.sfeng.sourcefire.com:netboot
+		mount-sshfs ender.sfeng.sourcefire.com:src ~/src
+		mount-sshfs ender.sfeng.sourcefire.com:/nfs/netboot ~/netboot
 
 		#echo -n "Mounting ender on ~/src..."
 		#sshfs ender.sfeng.sourcefire.com:src/ ~/src -C -o uid=${MYUID},gid=${MYGID}
