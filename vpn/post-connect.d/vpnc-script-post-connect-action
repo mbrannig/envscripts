@@ -7,6 +7,9 @@ get_local_dns()
 			localns=8.8.8.8
 	fi
 	localsearch=$(grep search /etc/resolv.conf.SAVE_VPN | head -1 | sed -e 's/search //g')
+	if [ -z "${localsearch}" ] ; then
+		localsearch=$(grep domain /etc/resolv.conf.SAVE_VPN | head -1 | sed -e 's/search //g')
+	fi
 	echo "Local DNS is ${localns}"
 	echo "Local search domains are ${localsearch}"
 
