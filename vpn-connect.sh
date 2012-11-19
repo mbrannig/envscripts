@@ -17,11 +17,20 @@ SFNETWORKS=(
 #else
 #	VPN_SCRIPT="/etc/vpnc/vpnc-script"
 #fi
-VPN_SCRIPT=$(dirname $0)/vpn/vpnc-script
+VPN_SCRIPT=~/envscripts/vpn/vpnc-script
+
+get_local_dns()
+{
+	localns=$(grep nameserver /etc/resolv.conf | head -1 | cut -d' ' -f2)
+	if [[ -z "${localns}" || ${localns} == "127.0.0.1" ]] ; then
+			localns=8.8.8.8
+	fi
+	localsearch=$(grep search /etc/resolv.conf | head -1 | sed -e 's/search //g')
+}
 
 export_split_tunnel()
 {
-		i=0
+	i=0
 	for NETWORK in "${SFNETWORKS[@]}" ; do
 		echo "Configuring ${NETWORK} for VPN"
 		export CISCO_SPLIT_INC_${i}_ADDR=`echo $NETWORK | cut -d '/' -f 1`
@@ -32,43 +41,35 @@ export_split_tunnel()
 	export CISCO_SPLIT_INC=$i
 	echo "We have ${CISCO_SPLIT_INC} networks"
 	if [ -n "$CISCO_DEF_DOMAIN" ] ; then
-		export CISCO_DEF_DOMAIN="$CISCO_DEF_DOMAIN cm.sourcefire.com englab.sourcefire.com sfeng.sourcefire.com denofslack.org"
+		export CISCO_DEF_DOMAIN="$CISCO_DEF_DOMAIN cm.sourcefire.com englab.sourcefire.com sfeng.sourcefire.com ${localsearch}"
 	fi
 }
 
 setup_dns()
 {
 	killall dnsmasq
-	localns=$(grep nameserver /etc/resolv.conf | head -1 | cut -d' ' -f2)
 	echo "Local NS is ${localns}"
 	dnsmasq -a 127.0.0.1 -h -R -S ${localns} -S /sourcefire.com/10.1.1.92 -S /sourcefire.com/10.1.1.220
 	cp -f /etc/resolv.conf /etc/resolv.conf.SAVE_VPN
 	echo "#@VPNC_GENERATED@ mab vpn file" > /etc/resolv.conf
 	echo "nameserver 127.0.0.1" >> /etc/resolv.conf
-	echo "search denofslack.org sourcefire.com sfeng.sourcefire.com englab.sourcefire.com cm.sourcefire.com" >> /etc/resolv.conf
-
+	echo "search ${localsearch} sourcefire.com sfeng.sourcefire.com englab.sourcefire.com cm.sourcefire.com" >> /etc/resolv.conf
 
 }
 
 stop_vpn()
 {
 	killall openconnect
-	killall dnsmasq
-	if [ -f /etc/resolv.conf.SAVE_VPN ] ; then
-		cp -f /etc/resolv.conf.SAVE_VPN /etc/resolv.conf
-	fi
+	
 }
 
 start_vpn()
 {
-	export_split_tunnel
 	openconnect -b -u mbrannig --authgroup=SF-STD -s ${VPN_SCRIPT} remote.sourcefire.com
-	sleep 2
-	setup_dns
 }
 
 
-PROGNAME=$( basename $0)
+PROGNAME=$(basename $0)
 if [ ${PROGNAME} == "vpn-connect.sh" ] ; then
 	start_vpn
 else

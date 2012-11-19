@@ -3,5 +3,12 @@
 killall dnsmasq
 
 if [ -f /etc/resolv.conf.SAVE_VPN ] ; then
-		cp -f /etc/resolv.conf.SAVE_VPN /etc/resolv.conf
+	echo "Restoring /etc/resolv.conf.SAVE_VPN to /etc/resolv.conf"
+	cp -vf /etc/resolv.conf.SAVE_VPN /etc/resolv.conf
+fi
+
+sshfs_mounts=$(mount | grep sourcefire.com | cut -d' ' -f3 | xargs )
+if [ -n "${sshfs_mounts}" ] ; then
+	echo "Unmounting ${sshfs_mounts}"
+	fusermount -zu ${sshfs_mounts}
 fi

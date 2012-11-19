@@ -181,9 +181,9 @@ function mount-sshfs {
 	fi
 
 	if ping -c 1 $host >& /dev/null ; then
-		if ! mount | grep $host >& /dev/null ; then
+		if ! mount | grep $hd >& /dev/null ; then
 			echo -n "Mounting $host : $md on $mp..."
-			sshfs $hd $mp -C -o uid=${MYUID},gid=${MYGID}${SSHFS_OPTIONS}
+			sshfs $hd $mp -C -o idmap=user${SSHFS_OPTIONS}
 			echo "done"
 		else
 			echo "$hd already mounted"
@@ -266,24 +266,21 @@ function fix-dns {
 
 function connect-sf {
     local PID=$( pgrep openconnect )
-    local DNSPID=$( pgrep dnsmasq )
-    export USESPLITTUNNEL=1
     if [ -z "${PID}" ] ; then
 		echo "Connecting to sourcefire vpn...."
-		sudo openconnect -b -u mbrannig --authgroup=SF-STD -s /etc/vpnc/vpnc-script remote.sourcefire.com
-		sleep 2
-		[ -n "${DNSPID}" ] && sudo kill ${DNSPID}
-		echo "Starting dnsmasq..."
-		sudo dnsmasq -a 127.0.0.1 -h -R -S 192.168.2.1 -S /sourcefire.com/10.1.1.92 -S /sourcefire.com/10.1.1.220
-		echo -n "Mounting ender on ~/src..."
-		sshfs ender.sfeng.sourcefire.com:src/ ~/src -C -o uid=${MYUID},gid=${MYGID}
-		echo "done"
+		sudo openconnect -b -u mbrannig --authgroup=SF-STD -s ~/envscripts/vpn/vpnc-script remote.sourcefire.com
+		mount-sshfs ender.sfeng.sourcefire.com:src
+		mount-sshfs ender.sfeng.sourcefire.com:netboot
+
+		#echo -n "Mounting ender on ~/src..."
+		#sshfs ender.sfeng.sourcefire.com:src/ ~/src -C -o uid=${MYUID},gid=${MYGID}
+		#echo "done"
     else
 		if ask "Disconnect from Sourcefire VPN ($PID)" ; then
-		    echo -n "Unmounting ender on ~/src..."
-		    fusermount -u ~/src
+		    #echo -n "Unmounting ender on ~/src..."
+		    #fusermount -u ~/src
 		    echo -n "Disconnecting sourcefire vpn..."
-		    sudo kill ${PID} ${DNSPID}
+		    sudo kill ${PID}
 		    echo " done"
 		fi
     fi

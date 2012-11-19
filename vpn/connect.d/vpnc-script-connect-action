@@ -25,5 +25,5 @@ if [ ! -f /tmp/nosplit-tunnel ] ; then
 		export CISCO_DEF_DOMAIN="$CISCO_DEF_DOMAIN cm.sourcefire.com englab.sourcefire.com sfeng.sourcefire.com denofslack.org"
 	fi
 fi 
-
-cp -f /etc/resolv.conf /etc/resolv.conf.SAVE_VPN
+echo "Saving existing resolv.conf to /etc/resolv.conf.SAVE_VPN"
+cp -vf /etc/resolv.conf /etc/resolv.conf.SAVE_VPN
