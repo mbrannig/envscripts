@@ -226,10 +226,10 @@ function session {
 }
 
 function mount-ender {
-    if ping -c 1 ender.sfeng.sourcefire.com >& /dev/null ; then
+    if ping -c 1 ender.englab.sourcefire.com >& /dev/null ; then
 	if ! mount | grep ender.sfeng >& /dev/null ; then
 	    echo -n "Mounting ender on ~/src ... "
-	    sshfs ender.sfeng.sourcefire.com:src/ ~/src -C -o uid=${MYUID},gid=${MYGID}
+	    sshfs ender.englabg.sourcefire.com:src/ ~/src -C -o uid=${MYUID},gid=${MYGID}
 	    echo " done"
 	else
 	    echo -n "Unmount ~/src ... "
@@ -243,10 +243,10 @@ function mount-ender {
 }
 
 function mount-netboot {
-    if ping -c 1 ender.sfeng.sourcefire.com >& /dev/null ; then
+    if ping -c 1 ender.englab.sourcefire.com >& /dev/null ; then
         if ! mount | grep netboot >& /dev/null ; then
             echo -n "Mounting ender on ~/netboot ... "
-            sshfs ender.sfeng.sourcefire.com:/nfs/netboot/ ~/netboot -C -o uid=${MYUID},gid=${MYGID}
+            sshfs ender.englab.sourcefire.com:/nfs/netboot/ ~/netboot -C -o uid=${MYUID},gid=${MYGID}
             echo " done"
         else
             echo -n "Unmount ~/netboot ... "
@@ -269,8 +269,8 @@ function connect-sf {
     if [ -z "${PID}" ] ; then
 		echo "Connecting to sourcefire vpn...."
 		sudo openconnect -b -u mbrannig --authgroup=SF-STD -s ~/envscripts/vpn/vpnc-script remote.sourcefire.com
-		mount-sshfs ender.sfeng.sourcefire.com:src/ ~/src
-		mount-sshfs ender.sfeng.sourcefire.com:/nfs/netboot/ ~/netboot
+		mount-sshfs ender.englab.sourcefire.com:src/ ~/src
+		mount-sshfs ender.englab.sourcefire.com:/nfs/netboot/ ~/netboot
 
 		#echo -n "Mounting ender on ~/src..."
 		#sshfs ender.sfeng.sourcefire.com:src/ ~/src -C -o uid=${MYUID},gid=${MYGID}
