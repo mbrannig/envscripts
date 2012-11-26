@@ -532,6 +532,11 @@ function screenhelp()
 	cat ~/repo/mbrannig/screen.txt
 }
 
+function list-colors()
+{
+	for i in {0..255} ; do printf "\x1b[38;5;${i}mcolour${i}\n" ; done
+}
+
 get_chroot
 
 if ! bash --version | grep 2.05 >& /dev/null ; then
