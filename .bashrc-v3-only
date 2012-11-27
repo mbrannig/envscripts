@@ -42,6 +42,7 @@ function rs()
     fi	
 
     ssh ${user}@${host}
+    export TITLE=
 }
 
 
