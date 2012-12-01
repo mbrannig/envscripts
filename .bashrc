@@ -49,7 +49,7 @@ export GIT_PS1_SHOWDIRTYSTATE=
 export GIT_PS1_SHOWUNTRACKEDFILES=
 export GIT_PS1_SHOWUPSTREAM=
 
-function parse_git_branch () {
+function parse_git_branch() {
     git name-rev HEAD 2> /dev/null | sed 's#HEAD\ \(.*\)# (git::\1)#'
 }
 
@@ -438,7 +438,7 @@ function copy_iso()
     if [ "${ARCH}" = "i686" ] ; then
 	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_3D_Device_1000*iso ${SF_PREFIX}/iso/Sourcefire_3D_Device_2000*iso ${SF_PREFIX}/iso/Sourcefire_Defense_Center_1000*iso ender:/var/www/iso
 
-	sed -i -e 's/SRV=.*$/SRV=10.4.12.10/g' -e 's/%%PATH%%//g' ${SF_PREFIX}/pxe-config/integration/Sourcefire*config
+	sed -i -e 's/SRV=.*$/SRV=10.5.60.236/g' -e 's/%%PATH%%//g' ${SF_PREFIX}/pxe-config/integration/Sourcefire*config
 
 	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_3D_Device_1000*config ${SF_PREFIX}/pxe-config/integration/Sourcefire_3D_Device_2000*config ${SF_PREFIX}/pxe-config/integration/Sourcefire_Defense_Center_1000*config ender:/var/www/integ
 	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_3D_Device_1000*cfg ${SF_PREFIX}/pxe-config/pxe/Sourcefire_3D_Device_2000*cfg ${SF_PREFIX}/pxe-config/pxe/Sourcefire_Defense_Center_1000*cfg ender:/var/www/pxe
@@ -447,8 +447,8 @@ function copy_iso()
 	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*S3*iso ender:/var/www/iso
 	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*9900*iso ender:/var/www/iso
 
-	sed -i -e 's/SRV=.*$/SRV=10.4.12.10/g' -e 's/%%PATH%%//g' ${SF_PREFIX}/pxe-config/integration/Sourcefire*config
-	sed -i -e 's,INTEGCONF=.*/%%PATH%%/pxe-config/integration,INTEGCONF=10.4.12.10/integ,g' ${SF_PREFIX}/pxe-config/pxe/Sourcefire*cfg
+	sed -i -e 's/SRV=.*$/SRV=10.5.60.236/g' -e 's/%%PATH%%//g' ${SF_PREFIX}/pxe-config/integration/Sourcefire*config
+	sed -i -e 's,INTEGCONF=.*/%%PATH%%/pxe-config/integration,INTEGCONF=10.5.60.236/integ,g' ${SF_PREFIX}/pxe-config/pxe/Sourcefire*cfg
 
 	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_*S3*config ender:/var/www/integ
 	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_*9900*config ender:/var/www/integ
@@ -555,6 +555,7 @@ if host ${HOST} | grep sourcefire >& /dev/null ; then
     HOST_LIST=$(cat ${REPO}/hosts-sf.txt ${REPO}/hosts.txt | xargs)
     HOST_LIST_FILE=${REPO}/hosts-sf.txt
 #    echo "SF_PREFIX is set to ${SF_PREFIX}"
+	export VMWARE_PATHS=/vmware/mbrannig
 else
 #    echo "Setting up Den of Slack Environment (${ARCH}):"
     export PRINTER=officejet7310
@@ -594,11 +595,11 @@ if [ ${TERM} == "xterm" ] ; then
     fi
 fi
 
-if [ -n "${TMUX}" ] ; then
-	if [ -x /usr/bin/tmux ] ; then
-		export TMUX_SESSION=$(tmux list-panes -F '#{session_name}')
-	fi
-fi
+# if [ -n "${TMUX}" ] ; then
+# 	if [ -x /usr/bin/tmux ] ; then
+# 		export TMUX_SESSION=$(tmux list-panes -F '#{session_name}')
+# 	fi
+# fi
 
 set -o emacs
 set -o histexpand

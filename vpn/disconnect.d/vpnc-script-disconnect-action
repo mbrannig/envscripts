@@ -10,10 +10,12 @@ fi
 sshfs_mounts=$(mount | grep sourcefire.com | cut -d' ' -f3 | xargs )
 if [ -n "${sshfs_mounts}" ] ; then
 	PLATFORM=$(uname )
-	echo "Unmounting ${sshfs_mounts}"
-	if [ ${PLATFORM} == "Linux" ] ; then
-		fusermount -zu ${sshfs_mounts}
-	elif [ ${PLATFORM} == "Darwin" ] ; then
-		umount -f ${sshfs_mounts}
-	fi
+	for mount in ${sshfs_mounts} ; do 
+		echo "Unmounting ${mount}"
+		if [ ${PLATFORM} == "Linux" ] ; then
+			fusermount -zu ${mount}
+		elif [ ${PLATFORM} == "Darwin" ] ; then
+			umount -f ${mount}
+		fi
+	done
 fi
