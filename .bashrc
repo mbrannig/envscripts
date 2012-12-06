@@ -205,7 +205,7 @@ function umount-sshfs {
 }
 
 function session {
-	if [ ! -x /usr/bin/tmux ] || [ -x /opt/local/bin/tmux ] ; then
+	if [ ! -x /usr/bin/tmux ] && [ ! -x /opt/local/bin/tmux ] ; then
 		return
 	fi
 
