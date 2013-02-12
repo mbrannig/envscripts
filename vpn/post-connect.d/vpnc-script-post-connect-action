@@ -22,7 +22,7 @@ if [ ! -f /tmp/nosplit-tunnel ] ; then
 
 	get_local_dns
 
-	dnsmasq -a 127.0.0.1 -h -R -S ${localns} -S /sourcefire.com/10.1.1.92 -S /sourcefire.com/10.1.1.220
+	dnsmasq -a 127.0.0.1 -h -R -S ${localns} -S /sourcefire.com/10.1.1.6 -S /sourcefire.com/10.1.1.7
 
 	echo "#@VPNC_GENERATED@ mab split tunnel vpn file" > /etc/resolv.conf
 	echo "nameserver 127.0.0.1" >> /etc/resolv.conf
