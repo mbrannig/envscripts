@@ -27,3 +27,27 @@ resolvconf -- remove link to resolv.conf for VPN use
 
 add c-l, c-r to WM configuration
 
+for headless, remote, change /etc/default/grub GRUB_CMDLINE_LINUX_DEFAULT="text"
+
+In NetworkManager/NetworkManager.conf/ set managed=true / commit out dnsmasq
+Set network in /etc/network/interfaces
+
+github: 
+git clone git@github.com:mbrannig/envscripts.git
+	run envscripts/bin/enable.sh
+
+dropbox:
+
+32-bit:
+
+cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86" | tar xzf -
+
+64-bit:
+
+cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
+
+Next, run the Dropbox daemon from the newly created .dropbox-dist folder.
+
+~/.dropbox-dist/dropboxd
+
+
