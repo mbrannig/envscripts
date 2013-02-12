@@ -12,3 +12,9 @@ vnc4server -geometry 1280x1024 &
 6. DOCIMPACT: 
 7. REVIEWED BY:
 
+LaserJet on Windows:
+ add network printer not listed, select shared by name
+ http://fs:631/printers/fsPR3
+ LaserJet 1200 ; if you have to add printer, add as any printer then update driver in printer properties
+
+ 
