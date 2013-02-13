@@ -1,7 +1,7 @@
 Install:
 
 apt-get install python-software-properties emacs23-nox schroot vim autofs
-multitail cvs tcsh msmtp 
+multitail cvs tcsh msmtp  inotify-tools
 apt-get install 
 
 
