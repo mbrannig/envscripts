@@ -436,24 +436,24 @@ progress()
 function copy_iso()
 {
     if [ "${ARCH}" = "i686" ] ; then
-	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_3D_Device_1000*iso ${SF_PREFIX}/iso/Sourcefire_3D_Device_2000*iso ${SF_PREFIX}/iso/Sourcefire_Defense_Center_1000*iso ender:/var/www/iso
+	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_3D_Device_1000*iso ${SF_PREFIX}/iso/Sourcefire_3D_Device_2000*iso ${SF_PREFIX}/iso/Sourcefire_Defense_Center_1000*iso indus:/var/www/iso
 
 	sed -i -e 's/SRV=.*$/SRV=10.5.60.236/g' -e 's/%%PATH%%//g' ${SF_PREFIX}/pxe-config/integration/Sourcefire*config
 
-	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_3D_Device_1000*config ${SF_PREFIX}/pxe-config/integration/Sourcefire_3D_Device_2000*config ${SF_PREFIX}/pxe-config/integration/Sourcefire_Defense_Center_1000*config ender:/var/www/integ
-	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_3D_Device_1000*cfg ${SF_PREFIX}/pxe-config/pxe/Sourcefire_3D_Device_2000*cfg ${SF_PREFIX}/pxe-config/pxe/Sourcefire_Defense_Center_1000*cfg ender:/var/www/pxe
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_3D_Device_1000*config ${SF_PREFIX}/pxe-config/integration/Sourcefire_3D_Device_2000*config ${SF_PREFIX}/pxe-config/integration/Sourcefire_Defense_Center_1000*config indus:/var/www/integ
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_3D_Device_1000*cfg ${SF_PREFIX}/pxe-config/pxe/Sourcefire_3D_Device_2000*cfg ${SF_PREFIX}/pxe-config/pxe/Sourcefire_Defense_Center_1000*cfg indus:/var/www/pxe
 
     else
-	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*S3*iso ender:/var/www/iso
-	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*9900*iso ender:/var/www/iso
+	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*S3*iso indus:/var/www/iso
+	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*9900*iso indus:/var/www/iso
 
 	sed -i -e 's/SRV=.*$/SRV=10.5.60.236/g' -e 's/%%PATH%%//g' ${SF_PREFIX}/pxe-config/integration/Sourcefire*config
 	sed -i -e 's,INTEGCONF=.*/%%PATH%%/pxe-config/integration,INTEGCONF=10.5.60.236/integ,g' ${SF_PREFIX}/pxe-config/pxe/Sourcefire*cfg
 
-	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_*S3*config ender:/var/www/integ
-	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_*9900*config ender:/var/www/integ
-	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_*S3*cfg ender:/var/www/pxe
-	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_*9900*cfg ender:/var/www/pxe
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_*S3*config indus:/var/www/integ
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_*9900*config indus:/var/www/integ
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_*S3*cfg indus:/var/www/pxe
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_*9900*cfg indus:/var/www/pxe
     fi
 
 
