@@ -50,4 +50,9 @@ Next, run the Dropbox daemon from the newly created .dropbox-dist folder.
 
 ~/.dropbox-dist/dropboxd
 
+gedit:
+apt-get install gedit-developer-plugins gedit-latex-plugin gedit-plugins
 
+apt-add-repository ppa:ubuntu-on-rails/ppa
+apt-get update
+apt-get install gedit-gmate
