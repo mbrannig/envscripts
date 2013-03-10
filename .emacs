@@ -111,7 +111,7 @@
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
 
-(tool-bar-mode -1)
+;;(tool-bar-mode -1)
 (menu-bar-mode -1)
 
  (require 'saveplace)
