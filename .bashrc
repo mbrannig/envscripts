@@ -87,7 +87,7 @@ function exitstatus {
 
 	BRANCH_INFO=$(get_branch_information)
 	if [ -n "${BRANCH_INFO}" ] ; then
-	    BRANCH_NAME="${GREEN}${BOLD}[${BRANCH_INFO}]${COLOR}"
+	    BRANCH_NAME="[${BRANCH_INFO}]"
 	else
 	    BRANCH_NAME=
 	fi
@@ -112,7 +112,7 @@ function exitstatus {
 		EXIT_PROMPT="${RED}${EXITSTATUS}${COLOR}"
 		EXIT_OFF="${OFF}${RED}"
 	fi
-	export PS1="${PURPLE}${BOLD}\u@\h (${PLATFORM} ${ARCH})${CHROOT_PROMPT}${BRANCH_NAME}${SF_PREFIX_PROMPT}${OFF}\n${EXIT_PROMPT}:${COLOR}\w${EXIT_OFF}${LAST} ${OFF}"
+	export PS1="${PURPLE}${BOLD}\u@\h (${PLATFORM} ${ARCH})${CHROOT_PROMPT}${OFF}${BRANCH_NAME}${COLOR}${SF_PREFIX_PROMPT}${OFF}\n${EXIT_PROMPT}:${COLOR}\w${EXIT_OFF}${LAST} ${OFF}"
 
 	export PS2="${BOLD}>${OFF} "
 	xtitle
