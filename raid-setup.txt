@@ -1,0 +1,31 @@
+   1  man mdadm
+    2  mdadm --create /dev/md0 --level=mirror --raid-devices=2 /dev/sda1 /dev/sdb2
+    3  mdadm --create /dev/md0 --level=mirror --raid-devices=2 /dev/sda1 /dev/sdb1
+    4  mdadm --assemble /dev/md0
+    5  df
+    6  mkdir /raid
+    7  mount /dev/md0 /raid
+    8  mount /dev/md0p1 /raid
+    9  df
+   10  df -h
+   11  mke2fs /dev/md0
+   12  mkfs.ext4 /dev/md0
+   13  df
+   14  mount /dev/md0 /raid
+   15  df
+   16  df -h
+   17  umount /raid
+   18  vi /etc/mdadm/mdadm.conf 
+   19  ls
+   20  cd /etc/mdadm/
+   21  ls
+   22  ls -alF
+   23  cd
+   24  mount /dev/md0 /raid
+   25  mkfs.ext4 /dev/md0
+   26  e2label /dev/md0 Home
+   27  mount /dev/md0 /raid
+   28  df
+
+mdadm --auto-detect
+mount /dev/md0 /raid
