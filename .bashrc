@@ -41,9 +41,15 @@ CYAN="\[\033[0;36m\]"
 PURPLE="\[\033[0;35m\]"
 RV="\e[7m"
 
-#source ${REPO}/.git-completion.sh
 
-if [ -f /etc/bash_completion ] ; then source /etc/bash_completion ; fi
+if [ -f /etc/bash_completion ] ; then 
+	source /etc/bash_completion 
+elif [ -f /usr/lib/git-core/git-completion.bash ] ; then
+	source /usr/lib/git-core/git-completion.bash
+	if [ -f /usr/lib/git-core/git-prompt.sh ] ; then
+		source /usr/lib/git-core/git-prompt.sh
+	fi
+fi
 
 export GIT_PS1_SHOWDIRTYSTATE=auto
 export GIT_PS1_SHOWUNTRACKEDFILES=auto
@@ -506,7 +512,9 @@ function unlom()
 
 function caps-to-ctrl()
 {
-    setxkbmap -option ctrl:nocaps
+	if [ -x /usr/bin/setxkbmap ] ; then
+    	setxkbmap -option ctrl:nocaps
+    fi
 }
 
 function screenhelp()
