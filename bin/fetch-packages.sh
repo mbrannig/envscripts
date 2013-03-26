@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSIONS="5.2.0"
+VERSIONS="4.10.3 5.2.0"
 ARCHES="i386 x86_64"
 ssh_host=pecan
 ssh_path="/nfs/netboot/sf-linux-os/Development"

@@ -41,29 +41,14 @@ CYAN="\[\033[0;36m\]"
 PURPLE="\[\033[0;35m\]"
 RV="\e[7m"
 
-source ${REPO}/.git-completion.sh
+#source ${REPO}/.git-completion.sh
 
 if [ -f /etc/bash_completion ] ; then source /etc/bash_completion ; fi
 
-export GIT_PS1_SHOWDIRTYSTATE=
-export GIT_PS1_SHOWUNTRACKEDFILES=
-export GIT_PS1_SHOWUPSTREAM=
-
-function parse_git_branch() {
-    git name-rev HEAD 2> /dev/null | sed 's#HEAD\ \(.*\)# (git::\1)#'
-}
-
-function parse_hg_branch() {
-    hg branch 2>/dev/null | sed 's#\(.*\)# (hg::\1)#'
-}
-
-function parse_bzr_branch() {
-    local tmp
-    tmp=$( bzr nick 2> /dev/null )
-    if [ -n "${tmp}" ] ; then
-	echo -n "bzr:${tmp}" 
-    fi
-}
+export GIT_PS1_SHOWDIRTYSTATE=auto
+export GIT_PS1_SHOWUNTRACKEDFILES=auto
+export GIT_PS1_SHOWUPSTREAM=auto
+export GIT_PS1_SHOWCOLORHINTS=on
 
 function parse_cvs_branch() {
     if [ -e CVS ] ; then
@@ -74,11 +59,8 @@ function parse_cvs_branch() {
 
 function get_branch_information() {
     if [ "${PLATFORM}" == "Linux" ] ; then
-        parse_cvs_branch
-        parse_git_branch
-#        parse_hg_branch
-	parse_bzr_branch
-#	__git_ps1 "git:%s "
+       if [ -d CVS ] ; then parse_cvs_branch ; fi
+		__git_ps1 "git:%s"
     fi
 }
 
@@ -105,7 +87,7 @@ function exitstatus {
 
 	BRANCH_INFO=$(get_branch_information)
 	if [ -n "${BRANCH_INFO}" ] ; then
-	    BRANCH_NAME="${GREEN}${BOLD}[$(get_branch_information)]${COLOR}"
+	    BRANCH_NAME="${GREEN}${BOLD}[${BRANCH_INFO}]${COLOR}"
 	else
 	    BRANCH_NAME=
 	fi
