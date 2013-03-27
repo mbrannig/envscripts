@@ -49,6 +49,11 @@ elif [ -f /usr/lib/git-core/git-completion.bash ] ; then
 	if [ -f /usr/lib/git-core/git-prompt.sh ] ; then
 		source /usr/lib/git-core/git-prompt.sh
 	fi
+elif [ -f ${REPO}/git-completion ] ; then 
+	source ${REPO}/git-completion
+	if [ -f ${REPO}/git-sh-prompt ] ; then
+		source ${REPO}/git-sh-prompt
+	fi
 fi
 
 export GIT_PS1_SHOWDIRTYSTATE=auto
