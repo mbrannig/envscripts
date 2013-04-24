@@ -49,17 +49,17 @@ RV="\e[7m"
 # 	if [ -f /usr/lib/git-core/git-prompt.sh ] ; then
 # 		source /usr/lib/git-core/git-prompt.sh
 # 	fi
-# elif [ -f ${REPO}/git-completion ] ; then 
-# 	source ${REPO}/git-completion
-# 	if [ -f ${REPO}/git-sh-prompt ] ; then
-# 		source ${REPO}/git-sh-prompt
-# 	fi
-# fi
+if [ -f ${REPO}/git-completion ] ; then 
+	source ${REPO}/git-completion
+	if [ -f ${REPO}/git-sh-prompt ] ; then
+		source ${REPO}/git-sh-prompt
+	fi
+fi
 
-# export GIT_PS1_SHOWDIRTYSTATE=auto
-# export GIT_PS1_SHOWUNTRACKEDFILES=auto
-# export GIT_PS1_SHOWUPSTREAM=auto
-# export GIT_PS1_SHOWCOLORHINTS=on
+export GIT_PS1_SHOWDIRTYSTATE=auto
+export GIT_PS1_SHOWUNTRACKEDFILES=auto
+export GIT_PS1_SHOWUPSTREAM="verbose"
+export GIT_PS1_SHOWCOLORHINTS=on
 
 function parse_cvs_branch() {
     if [ -e CVS ] ; then
