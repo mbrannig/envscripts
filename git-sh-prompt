@@ -343,7 +343,6 @@ __git_ps1 ()
 		fi
 
 		local f="$w$i$s$u"
-		if [ $pcmode = yes ]; then
 			local gitstring=
 			if [ -n "${GIT_PS1_SHOWCOLORHINTS-}" ]; then
 				local c_red='\e[31m'
@@ -386,10 +385,9 @@ __git_ps1 ()
 				gitstring="$c${b##refs/heads/}${f:+ $f}$r$p"
 			fi
 			gitstring=$(printf -- "$printf_format" "$gitstring")
-			PS1="$ps1pc_start$gitstring$ps1pc_end"
-		else
+			#PS1="$ps1pc_start$gitstring$ps1pc_end"
 			# NO color option unless in PROMPT_COMMAND mode
-			printf -- "$printf_format" "$c${b##refs/heads/}${f:+ $f}$r$p"
-		fi
+			#printf -- "$printf_format" "$c${b##refs/heads/}${f:+ $f}$r$p"
+			echo ${gitstring}
 	fi
 }
