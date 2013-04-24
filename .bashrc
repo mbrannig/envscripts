@@ -444,8 +444,10 @@ function copy_iso()
 	sed -i -e 's,INTEGCONF=.*/%%PATH%%/pxe-config/integration,INTEGCONF=10.5.60.236/integ,g' ${SF_PREFIX}/pxe-config/pxe/Sourcefire*cfg
 
 	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_*S3*config indus:/var/www/integ
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_*Virtual*config indus:/var/www/integ
 	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_*9900*config indus:/var/www/integ
 	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_*S3*cfg indus:/var/www/pxe
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_*Virtual*cfg indus:/var/www/pxe
 	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_*9900*cfg indus:/var/www/pxe
     fi
 
