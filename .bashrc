@@ -42,24 +42,24 @@ PURPLE="\[\033[0;35m\]"
 RV="\e[7m"
 
 
-if [ -f /etc/bash_completion ] ; then 
-	source /etc/bash_completion 
-elif [ -f /usr/lib/git-core/git-completion.bash ] ; then
-	source /usr/lib/git-core/git-completion.bash
-	if [ -f /usr/lib/git-core/git-prompt.sh ] ; then
-		source /usr/lib/git-core/git-prompt.sh
-	fi
-elif [ -f ${REPO}/git-completion ] ; then 
-	source ${REPO}/git-completion
-	if [ -f ${REPO}/git-sh-prompt ] ; then
-		source ${REPO}/git-sh-prompt
-	fi
-fi
+# if [ -f /etc/bash_completion ] ; then 
+# 	source /etc/bash_completion 
+# elif [ -f /usr/lib/git-core/git-completion.bash ] ; then
+# 	source /usr/lib/git-core/git-completion.bash
+# 	if [ -f /usr/lib/git-core/git-prompt.sh ] ; then
+# 		source /usr/lib/git-core/git-prompt.sh
+# 	fi
+# elif [ -f ${REPO}/git-completion ] ; then 
+# 	source ${REPO}/git-completion
+# 	if [ -f ${REPO}/git-sh-prompt ] ; then
+# 		source ${REPO}/git-sh-prompt
+# 	fi
+# fi
 
-export GIT_PS1_SHOWDIRTYSTATE=auto
-export GIT_PS1_SHOWUNTRACKEDFILES=auto
-export GIT_PS1_SHOWUPSTREAM=auto
-export GIT_PS1_SHOWCOLORHINTS=on
+# export GIT_PS1_SHOWDIRTYSTATE=auto
+# export GIT_PS1_SHOWUNTRACKEDFILES=auto
+# export GIT_PS1_SHOWUPSTREAM=auto
+# export GIT_PS1_SHOWCOLORHINTS=on
 
 function parse_cvs_branch() {
     if [ -e CVS ] ; then
@@ -574,7 +574,8 @@ elif [ "${PLATFORM}" = "Darwin" ] ; then
     COLOR_LS="-G"
 fi
 
-PROMPT_COMMAND=exitstatus
+#PROMPT_COMMAND=exitstatus
+source ~/envscripts/liquidprompt
 BRANCH_REPOS="OS 3D"
 
 export PATH=~/envscripts/bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/sbin:/sbin:/bin:/usr/bin:/usr/local/bin::/usr/bin/X11:${EXTRAPATH}:/nfs/saruman/build/intel/cce/10.1.015/bin:/usr/local/go/bin
