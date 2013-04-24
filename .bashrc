@@ -261,7 +261,7 @@ function connect-sf {
     local PID=$( pgrep openconnect )
     if [ -z "${PID}" ] ; then
 		echo "Connecting to sourcefire vpn...."
-		sudo openconnect -b -u mbrannig --authgroup=SF-STD -s ~/envscripts/vpn/vpnc-script remote.sourcefire.com
+		sudo openconnect --no-cert-check -b -u mbrannig --authgroup=SF-STD -s ~/envscripts/vpn/vpnc-script remote.sourcefire.com
 		mount-sshfs pecan.englab.sourcefire.com:src/ ~/src
 		mount-sshfs pecan.englab.sourcefire.com:/nfs/netboot/ ~/netboot
 
