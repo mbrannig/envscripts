@@ -302,7 +302,8 @@ _lp_source_config()
         configfile="$HOME/.config/liquidpromptrc"
     else
         configfile="$XDG_HOME_DIR/liquidpromptrc"
-    elif [[ -f "${HOME}/envscripts/.liquidpromptrc" ]]
+    fi
+    if [[ -f "${HOME}/envscripts/.liquidpromptrc" ]]
     then
         configfile="${HOME}/envscripts/.liquidpromptrc"
     fi
