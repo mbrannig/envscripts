@@ -317,9 +317,9 @@ function xtitle()      # Adds some text in the terminal frame.
 	if [ -n "${TITLE}" ] ; then
 	    title=${TITLE}
 	else
-		if [ -n ${TMUX_SESSION} ] ; then
-			tmux_title=" (${TMUX_SESSION})"
-		fi
+		#if [ -n ${TMUX_SESSION} ] ; then
+		#	tmux_title=" (${TMUX_SESSION})"
+		#fi
 	    if [ -n "${CHROOT_NAME}" ] ; then
 		title="${SHORTHOST}:${CHROOT_NAME}"
 	    else
@@ -584,7 +584,7 @@ export LESS="-ern"
 export LANGUAGE=C
 export LC_ALL=C
 export LANG=C
-
+export TMUX_SESSION
 if [ ${TERM} == "xterm" ] ; then
     if [ "${PLATFORM}" != "Darwin" ] ; then
 	export TERM=xterm-256color

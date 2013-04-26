@@ -236,6 +236,7 @@ _lp_source_config()
     LP_MARK_SVN=${LP_MARK_SVN:-"‡"}
     LP_MARK_GIT=${LP_MARK_GIT:-"±"}
     LP_MARK_FOSSIL=${LP_MARK_FOSSIL:-"⌘"}
+    LP_MARK_TMUX=${LP_MARK_TMUX:-"⌘"}
     LP_MARK_BZR=${LP_MARK_BZR:-"⚯"}
     LP_MARK_UNTRACKED=${LP_MARK_UNTRACKED:-"*"}
     LP_MARK_STASH=${LP_MARK_STASH:-"+"}
@@ -1389,9 +1390,11 @@ _lp_set_prompt()
 
     # in main prompt: no space
     if [[ ! -z "$(_lp_in_multiplexer)" ]] ; then
+        TMUX_TITLE=$(tmux list-panes -F '(#{session_name}:#{window_index}.#{pane_index})' 2> /dev/null)
         LP_MARK_BRACKET_OPEN="${LP_COLOR_IN_MULTIPLEXER}${LP_MARK_BRACKET_OPEN}${NO_COL}"
         LP_MARK_BRACKET_CLOSE="${LP_COLOR_IN_MULTIPLEXER}${LP_MARK_BRACKET_CLOSE}${NO_COL}"
     fi
+
     LP_PROXY="$(_lp_proxy)"
 
     # right of main prompt: space at left
@@ -1448,8 +1451,8 @@ _lp_set_prompt()
 
     elif [[ -n "$LP_VCS_TYPES" ]]; then
         case "$LP_VCS_TYPES" in
-            #git)    LP_VCS=$(_lp_sl "$(_lp_git_branch_color)");;
-            git)    LP_VCS=$(__git_ps1) ;;
+            git)    LP_VCS=$(_lp_sl "$(_lp_git_branch_color)");;
+            #git)    A=$(__git_ps1); B=$(_lp_sl "$(_lp_git_branch_color)") ; LP_VCS="$A $B" ;;
             git-svn)LP_VCS=$(_lp_sl "$(_lp_git_branch_color)");;
             hg)     LP_VCS=$(_lp_sl "$(_lp_hg_branch_color)");;
             svn)    LP_VCS=$(_lp_sl "$(_lp_svn_branch_color)");;
@@ -1476,7 +1479,7 @@ _lp_set_prompt()
         # add title escape time, jobs, load and battery
         PS1="${LP_PS1_PREFIX}${LP_TIME}${LP_BATT}${LP_LOAD}${LP_JOBS}"
         # add user, host and permissions colon
-        PS1="${PS1}${LP_MARK_BRACKET_OPEN}${LP_USER}${LP_HOST}${LP_PERM}"
+        PS1="${PS1}${LP_MARK_BRACKET_OPEN}${TMUX_TITLE}${LP_USER}${LP_HOST}${LP_PERM}"
 
         # if not root
         if [[ "$EUID" -ne "0" ]]

@@ -31,18 +31,18 @@ get_sf_prefix()
 	fi
 	#echo -n "${SF_PREFIX_PROMPT}"
 }
-#LP_PS1_PREFIX=$(get_sf_prefix)
+#$LP_PS1_PREFIX=$(get_sf_prefix)
 #get_sf_prefix
 # add time, jobs, load and battery
 LP_PS1="${LP_PS1_PREFIX}${LP_LOAD}${LP_JOBS}"
 # add user, host and permissions colon
-LP_PS1="${LP_PS1}[${LP_USER}${LP_HOST}${LP_PERM}"
+LP_PS1="${LP_PS1}${LP_MARK_BRACKET_OPEN}${TMUX_TITLE}${LP_USER}${LP_HOST}${LP_PERM}"
 
 # if not root
 if [[ "$EUID" -ne "0" ]]
 then
     # path in foreground color
-    LP_PS1="${LP_PS1}${LP_PWD}]${LP_VENV}${LP_PROXY}"
+    LP_PS1="${LP_PS1}${LP_PWD}${LP_MARK_BRACKET_CLOSE}${LP_VENV}${LP_PROXY}"
     # add VCS infos
     LP_PS1="${LP_PS1}${LP_VCS}"
 else
