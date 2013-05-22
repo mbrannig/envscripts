@@ -534,6 +534,36 @@ function list-colors()
 	for i in {0..255} ; do printf "\x1b[38;5;${i}mcolour${i}\n" ; done
 }
 
+
+time2sec() { while read i; do t=$i; i=(${i//:/ }); case "${#i[@]}" in
+ 3) echo "(${i[0]}*60*60)+(${i[1]}*60)+${i[2]:=0}"|bc -l;;
+ 2) echo "(${i[0]}*60)+${i[1]}"|bc -l;; esac; done; }
+
+sec2time()
+{
+	local sec=$1
+	local hours=$(( ${sec} / 3600 ))
+	local minutes=$(( ${sec} / 60 - (${hours} * 60) ))
+	#echo "${hours}:${minutes}"
+	printf "%02d:%02d\n" ${hours} ${minutes}
+}
+
+vpn-time-remaining ()
+{
+	local vpn=$( pgrep openconnect )
+
+	local seconds_in_day=86400
+	local elapsed_time=$( ps -p ${vpn} -o etime=)
+	local _seconds=$(echo ${elapsed_time} | time2sec)
+	local _remaining=$(( ${seconds_in_day} - ${_seconds} ))
+	local remaining=$( sec2time ${_remaining})
+	local elapsed=$( sec2time ${_seconds})
+	echo "Elapsed VPN (${vpn}) Time ${elapsed} Remaining VPN time ${remaining}" 
+}
+
+
+
+
 get_chroot
 
 if ! bash --version | grep 2.05 >& /dev/null ; then
