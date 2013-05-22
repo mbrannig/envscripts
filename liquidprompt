@@ -711,6 +711,7 @@ _lp_git_branch()
 # Add the number of pending commits and the impacted lines.
 _lp_git_branch_color()
 {
+        return
     [[ "$LP_ENABLE_GIT" != 1 ]] && return
 
     local branch
@@ -1390,7 +1391,8 @@ _lp_set_prompt()
 
     # in main prompt: no space
     if [[ ! -z "$(_lp_in_multiplexer)" ]] ; then
-        TMUX_TITLE=$(tmux list-panes -F '(#{session_name}:#{window_index}.#{pane_index})' 2> /dev/null)
+        #TMUX_TITLE=$(tmux list-panes -F '(#{session_name}:#{window_index}.#{pane_index})' 2> /dev/null)
+        TMUX_TITLE=
         LP_MARK_BRACKET_OPEN="${LP_COLOR_IN_MULTIPLEXER}${LP_MARK_BRACKET_OPEN}${NO_COL}"
         LP_MARK_BRACKET_CLOSE="${LP_COLOR_IN_MULTIPLEXER}${LP_MARK_BRACKET_CLOSE}${NO_COL}"
     fi
@@ -1407,7 +1409,7 @@ _lp_set_prompt()
         [[ -n "$PROMPT_DIRTRIM" ]] && PROMPT_DIRTRIM=$(_lp_get_dirtrim)
 
         if [[ "$(_lp_are_vcs_disabled)" -eq "0" ]] ; then
-            LP_VCS="$(_lp_git_branch_color)"
+            LP_VCS="$(__git_ps1)"
             LP_VCS_TYPES="git"
             if [[ -n "$LP_VCS" ]]; then
                 # If this is a git-svn repository
@@ -1451,13 +1453,15 @@ _lp_set_prompt()
 
     elif [[ -n "$LP_VCS_TYPES" ]]; then
         case "$LP_VCS_TYPES" in
-            git)    LP_VCS=$(_lp_sl "$(_lp_git_branch_color)");;
+            #git)    LP_VCS=$(_lp_sl "$(_lp_git_branch_color)");;
             #git)    A=$(__git_ps1); B=$(_lp_sl "$(_lp_git_branch_color)") ; LP_VCS="$A $B" ;;
-            git-svn)LP_VCS=$(_lp_sl "$(_lp_git_branch_color)");;
+            git)    A=$(__git_ps1); LP_VCS="$(__git_ps1)" ;;
+            #git-svn)LP_VCS=$(_lp_sl "$(_lp_git_branch_color)");;
             hg)     LP_VCS=$(_lp_sl "$(_lp_hg_branch_color)");;
             svn)    LP_VCS=$(_lp_sl "$(_lp_svn_branch_color)");;
             fossil) LP_VCS=$(_lp_sl "$(_lp_fossil_branch_color)");;
             bzr)    LP_VCS=$(_lp_sl "$(_lp_bzr_branch_color)");;
+            *)      LP_CVS="[none for ${LP_VCS_TYPES}]" ;;
         esac
     fi
 
