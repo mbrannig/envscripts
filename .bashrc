@@ -578,7 +578,7 @@ fi
 source ~/envscripts/liquidprompt
 BRANCH_REPOS="OS 3D"
 
-export PATH=~/envscripts/bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/sbin:/sbin:/bin:/usr/bin:/usr/local/bin::/usr/bin/X11:${EXTRAPATH}:/nfs/saruman/build/intel/cce/10.1.015/bin:/usr/local/go/bin
+export PATH=~/envscripts/bin:~/bin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/sbin:/bin:/usr/bin:/opt/local/bin::/usr/bin/X11:${EXTRAPATH}:/nfs/saruman/build/intel/cce/10.1.015/bin:/usr/local/go/bin
 export EDITOR=vi
 export VISUAL=vi
 export PAGER=less
