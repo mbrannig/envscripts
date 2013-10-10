@@ -49,6 +49,9 @@ RV="\e[7m"
 # 	if [ -f /usr/lib/git-core/git-prompt.sh ] ; then
 # 		source /usr/lib/git-core/git-prompt.sh
 # 	fi
+
+
+
 if [ -f ${REPO}/git-completion ] ; then 
 	source ${REPO}/git-completion
 	if [ -f ${REPO}/git-sh-prompt ] ; then
@@ -522,11 +525,6 @@ function caps-to-ctrl()
 	if [ -x /usr/bin/setxkbmap ] ; then
     	setxkbmap -option ctrl:nocaps
     fi
-}
-
-function screenhelp()
-{
-	cat ~/repo/mbrannig/screen.txt
 }
 
 function list-colors()
