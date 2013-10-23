@@ -69,6 +69,12 @@ myexit ()
 }
 
 
+setup_mux()
+{
+	echo "Setting up ssh control master connection for ${1}"
+	ssh -N -n ${1} >& /dev/null
+}
+
 wait=60
 seconds_in_day=86400
 
@@ -81,8 +87,10 @@ while true ; do
 		echo -n "Press enter to start VPN and enter password"
 		read junk
 		sudo openconnect --no-cert-check -b -u mbrannig --authgroup=SF-STD -s ~/envscripts/vpn/vpnc-script remote.sourcefire.com
-		mount-sshfs pecan.englab.sourcefire.com:src/ ~/src
-		mount-sshfs pecan.englab.sourcefire.com:/nfs/netboot/ ~/netboot
+		setup_mux indus
+		setup_mux pecan
+		mount-sshfs pecan:src/ ~/src
+		mount-sshfs pecan:/nfs/netboot/ ~/netboot
 		trap myexit INT
 		failures=0
 	else

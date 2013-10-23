@@ -49,6 +49,9 @@ RV="\e[7m"
 # 	if [ -f /usr/lib/git-core/git-prompt.sh ] ; then
 # 		source /usr/lib/git-core/git-prompt.sh
 # 	fi
+
+
+
 if [ -f ${REPO}/git-completion ] ; then 
 	source ${REPO}/git-completion
 	if [ -f ${REPO}/git-sh-prompt ] ; then
@@ -198,6 +201,13 @@ function umount-sshfs {
 		umount $mp
 	fi
 }
+
+function setup_mux()
+{
+	echo "Setting up ssh control master connection for ${1}"
+	ssh -N -n ${1}
+}
+
 
 function session {
 	if [ ! -x /usr/bin/tmux ] && [ ! -x /opt/local/bin/tmux ] ; then
@@ -524,11 +534,6 @@ function caps-to-ctrl()
 	if [ -x /usr/bin/setxkbmap ] ; then
     	setxkbmap -option ctrl:nocaps
     fi
-}
-
-function screenhelp()
-{
-	cat ~/repo/mbrannig/screen.txt
 }
 
 function list-colors()

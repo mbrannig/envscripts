@@ -1,11 +1,12 @@
 #!/bin/bash
 
 #VERSIONS="4.10.3 5.2.0 5.2.1"
-VERSIONS="4.10.0 5.2.1"
+#VERSIONS="4.10.0 5.2.1"
+VERSIONS="5.3.0 5.2.0 5.1.1"
 ARCHES="i386 x86_64"
 ssh_host=pecan
 ssh_path="/nfs/netboot/sf-linux-os/Development"
-installdir=/home/mbrannig/WORK/OS
+installdir=/home/${USER}/WORK/OS
 
 mkdir -p ${installdir}
 
