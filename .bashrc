@@ -171,8 +171,8 @@ function mount-sshfs {
 
 	if [ ${PLATFORM} == "Darwin" ] ; then
 		SSHFS_OPTIONS=",noappledouble,volname=$host-$mp"
-		echo "No mounting on Mac OSX"
-		return
+		#echo "No mounting on Mac OSX"
+		#return
 	fi
 
 	if ping -c 1 $host >& /dev/null ; then

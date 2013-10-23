@@ -72,7 +72,7 @@ myexit ()
 wait=60
 seconds_in_day=86400
 
-while /bin/true ; do 
+while true ; do 
 	vpn=$( pgrep openconnect )
 
 	if [ -z "${vpn}" ] ; then
