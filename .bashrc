@@ -200,6 +200,13 @@ function umount-sshfs {
 	fi
 }
 
+function setup_mux()
+{
+	echo "Setting up ssh control master connection for ${1}"
+	ssh -N -n ${1}
+}
+
+
 function session {
 	if [ ! -x /usr/bin/tmux ] && [ ! -x /opt/local/bin/tmux ] ; then
 		return
