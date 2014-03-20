@@ -174,6 +174,8 @@ function mount-sshfs {
 
 	if [ ${PLATFORM} == "Darwin" ] ; then
 		SSHFS_OPTIONS=",noappledouble,volname=$host-$mp"
+		#echo "No mounting on Mac OSX"
+		#return
 	fi
 
 	if ping -c 1 $host >& /dev/null ; then
@@ -199,6 +201,13 @@ function umount-sshfs {
 		umount $mp
 	fi
 }
+
+function setup_mux()
+{
+	echo "Setting up ssh control master connection for ${1}"
+	ssh -N -n ${1}
+}
+
 
 function session {
 	if [ ! -x /usr/bin/tmux ] && [ ! -x /opt/local/bin/tmux ] ; then
