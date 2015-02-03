@@ -163,3 +163,4 @@ function wait_host()
     echo -e "\b **** Host $1 ready"
 
 }
+

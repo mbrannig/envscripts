@@ -189,8 +189,43 @@ function mount-sshfs {
 	else
 		echo "Unable able to reach $host"
 	fi
+}
 
+function mount-sshfs-scm {
+	local hd=$1
+	local given_mp=$2
 
+	local host
+	local md
+
+	host=$(echo $hd | cut -d: -f1)
+	md=$(echo $hd | cut -d: -f2)
+
+	if [ -z "${given_mp}" ] ; then
+		mp="${HOME}/sshfs/$md"
+	else
+		mp="${HOME}/$given_mp"
+	fi
+
+	mkdir -pv ${mp}
+
+	if [ ${PLATFORM} == "Darwin" ] ; then
+		SSHFS_OPTIONS=",noappledouble,volname=$host-$mp"
+		#echo "No mounting on Mac OSX"
+		#return
+	fi
+
+	if ping -c 1 scm.esn.sourcefire.com >& /dev/null ; then
+		if ! mount | grep $hd >& /dev/null ; then
+			echo -n "Mounting $host : $md on $mp..."
+			sshfs $hd $mp -C -o workaround=nodelaysrv,cache=no,idmap=user${SSHFS_OPTIONS}
+			echo "done"
+		else
+			echo "$hd already mounted"
+		fi
+	else
+		echo "Unable able to reach $host"
+	fi
 }
 
 function umount-sshfs {
@@ -319,7 +354,7 @@ function sf_cvs()
 {
     export CVS_RSH=ssh
     export CVSROOT=":ext:scm.sfeng.sourcefire.com:/usr/cvsroot"
-    export CDPATH='.:~/src:~/src/WORK'
+    export CDPATH='.:~/src:~/src/WORK:~/WORK'
 }
 
 function xtitle()      # Adds some text in the terminal frame.
@@ -569,6 +604,34 @@ vpn-time-remaining ()
 }
 
 
+mount_work()
+{
+ (cd ~ ; mount-sshfs-scm pecan:transfer transfer)
+	sf_cvs
+hdiutil attach -mountpoint ~/WORK ~/work.sparsebundle/
+}
+
+set_unison_hostname()
+{
+	if [ -f ~/.ciscolaptop ] ; then
+		export UNISONLOCALHOSTNAME=bailey
+	fi
+}
+
+go_sf()
+{
+setup_mux indus.englab.sourcefire.com
+setup_mux pecan.englab.sourcefire.com
+setup_mux scm.esn.sourcefire.com
+setup_mux ajax.englab.sourcefire.com
+setup_mux walnut.englab.sourcefire.com
+setup_mux alai.englab.sourcefire.com
+	autossh -M 4321 -f -N tunnel
+	autossh -M 5321 -f -N pod-tunnel
+mount_work
+
+}
+
 
 
 get_chroot
@@ -578,11 +641,11 @@ if ! bash --version | grep 2.05 >& /dev/null ; then
 fi
 
 
-if host ${HOST} | grep sourcefire >& /dev/null ; then
-#    echo -n "Setting up Sourcefire Environment (${ARCH}) ${CHROOT_NAME}: "
+if host ${HOST} | grep -i cisco >& /dev/null ; then
+#    echo -n "Setting up Cisco Environment (${ARCH}) ${CHROOT_NAME}: "
     export PYTHONPATH=/usr/local/lib/python:/usr/lib/python2.5
     export PRINTER=Ricoh-Aficio-MP-C2800
-    export REPLYTO=matthew.brannigan@sourcefire.com
+    export REPLYTO=mbrannig@cisco.com
     EXTRAPATH=/usr/Python-2.6.4/bin
     export SF_PREFIX=${SF_PREFIX:=/var/tmp/BUILD}
     sf_cvs
@@ -590,6 +653,9 @@ if host ${HOST} | grep sourcefire >& /dev/null ; then
     HOST_LIST_FILE=${REPO}/hosts-sf.txt
 #    echo "SF_PREFIX is set to ${SF_PREFIX}"
 	export VMWARE_PATHS=/vmware/mbrannig
+	if [ -f ~/.ciscolaptop ] ; then
+		export UNISONLOCALHOSTNAME=bailey
+	fi
 else
 #    echo "Setting up Den of Slack Environment (${ARCH}):"
     export PRINTER=officejet7310
@@ -615,7 +681,7 @@ fi
 source ~/envscripts/liquidprompt
 BRANCH_REPOS="OS 3D"
 
-export PATH=~/envscripts/bin:~/bin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/sbin:/bin:/usr/bin:/opt/local/bin::/usr/bin/X11:${EXTRAPATH}:/nfs/saruman/build/intel/cce/10.1.015/bin:/usr/local/go/bin
+export PATH=~/envscripts/bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/sbin:/bin:/usr/bin:/usr/local/bin::/usr/bin/X11:${EXTRAPATH}:/nfs/saruman/build/intel/cce/10.1.015/bin:/usr/local/go/bin
 export EDITOR=vi
 export VISUAL=vi
 export PAGER=less
@@ -670,6 +736,7 @@ complete -W '$(cd /var/tmp/mab ; "ls" -d BUILD-* | sed -e "s/BUILD-//g" )' sfp
 complete -W '$(cd /etc/schroot/chroot.d ; "ls" )' schroot 
 complete -W '$(tmux ls -F "#{session_name}")' resume
 complete -W '$(tmux ls -F "#{session_name}")' session
+complete -W '$(cd ~/Library/Application\ Support/Unison ; ls -1 *.prf | grep -v default.prf | sed -e 's/\.prf//g')' unison
 complete -F _branches br
 complete -A hostname   ssh ping localboot
 complete -W '${HOST_LIST}' ssh ping rsh localboot
