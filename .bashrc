@@ -610,7 +610,8 @@ if ! bash --version | grep 2.05 >& /dev/null ; then
 fi
 
 
-if  | grep -i cisco >& /dev/null ; then
+if hostname | grep -i MBRANNIG-M-G180 >& /dev/null ; then
+
 #    echo -n "Setting up Cisco Environment (${ARCH}) ${CHROOT_NAME}: "
     export PYTHONPATH=/usr/local/lib/python:/usr/lib/python2.5
     export PRINTER=Ricoh-Aficio-MP-C2800
