@@ -438,6 +438,7 @@ function copy_iso()
 
     else
 	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*S3*iso indus:/var/www/iso
+	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*Virtual*iso indus:/var/www/iso
 	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*9900*iso indus:/var/www/iso
 
 	sed -i -e 's/SRV=.*$/SRV=10.5.60.236/g' -e 's/%%PATH%%//g' ${SF_PREFIX}/pxe-config/integration/Sourcefire*config
