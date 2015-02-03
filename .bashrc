@@ -604,15 +604,32 @@ vpn-time-remaining ()
 }
 
 
+mount_work()
+{
+ (cd ~ ; mount-sshfs-scm pecan:transfer transfer)
+	sf_cvs
+hdiutil attach -mountpoint ~/WORK ~/work.sparsebundle/
+}
+
+set_unison_hostname()
+{
+	if [ -f ~/.ciscolaptop ] ; then
+		export UNISONLOCALHOSTNAME=bailey
+	fi
+}
+
 go_sf()
 {
-	ssh -f -N tunnel
 setup_mux indus.englab.sourcefire.com
 setup_mux pecan.englab.sourcefire.com
 setup_mux scm.esn.sourcefire.com
 setup_mux ajax.englab.sourcefire.com
- (cd ~ ; mount-sshfs-scm pecan:transfer transfer)
-	sf_cvs
+setup_mux walnut.englab.sourcefire.com
+setup_mux alai.englab.sourcefire.com
+	autossh -M 4321 -f -N tunnel
+	autossh -M 5321 -f -N pod-tunnel
+mount_work
+
 }
 
 
@@ -624,7 +641,7 @@ if ! bash --version | grep 2.05 >& /dev/null ; then
 fi
 
 
-if host ${HOST} | grep cisco >& /dev/null ; then
+if host ${HOST} | grep -i cisco >& /dev/null ; then
 #    echo -n "Setting up Cisco Environment (${ARCH}) ${CHROOT_NAME}: "
     export PYTHONPATH=/usr/local/lib/python:/usr/lib/python2.5
     export PRINTER=Ricoh-Aficio-MP-C2800
@@ -636,6 +653,9 @@ if host ${HOST} | grep cisco >& /dev/null ; then
     HOST_LIST_FILE=${REPO}/hosts-sf.txt
 #    echo "SF_PREFIX is set to ${SF_PREFIX}"
 	export VMWARE_PATHS=/vmware/mbrannig
+	if [ -f ~/.ciscolaptop ] ; then
+		export UNISONLOCALHOSTNAME=bailey
+	fi
 else
 #    echo "Setting up Den of Slack Environment (${ARCH}):"
     export PRINTER=officejet7310

@@ -69,3 +69,5 @@ cp crate-home-link.sh to /usr/local/bin
 echo "session optional pam_exec.so seteuid /usr/local/bin/create-home-link.sh"
 >> /etc/pam.d/common-session
 
+fix tab in VNC
+xfconf-query -c xfce4-keyboard-shortcuts -p /xfwm4/custom/'<'Super'>'Tab -r

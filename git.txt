@@ -1,0 +1,182 @@
+
+Import
+--------
+
+Command:
+
+cvs2git --retain-conflicting-attic-files --fallback-encoding=UTF8 --symbol-transform='(\w+)(\/)(\w+)(\/)(\w+)(\/)(\w+)(\/)(\w+)(\/)(\*):\1-\3-\5-\7-\9' --symbol-transform='(Makefile):tag-make-file' --symbol-transform='(\w+)(\/)(\w+)(\/)(\w+)(\/)(\w+\-\w+)(\/)(\w+):\1-\3-\5-\7-\9' --blobfile=${tmp}/${project}-blob.dat --dumpfile=${tmp}/${project}-dump.dat --tmpdir=${tmp} --username=cvs2git ${path}
+
+git init --bare
+cat ${tmp}/${project}-blob.dat ${tmp}/${project}-dump.dat | git fast-import \
+--export-marks=${tmp}/file.marks 
+
+
+
+
+Other Notes
+-------------
+
+* Run gitolite setup in every new repo added
+
+* git clone ssh://git@scm/cm-tools
+
+* git config branch.autosetupmerge true
+  git branch [--track]  feature/mab origin/feature/mab 
+  git checkout <branch>
+
+* To create new repo
+  # with gitolite create perms
+  git init <name>
+  git add/commit stuff
+  git push --all ssh://git@scm/<PATH> 
+  git push --mirror ssh://git@scm/ims 
+
+* Need add a description
+
+* Added post-receive hook to .gitolite/hooks/common
+  - post-receive-email to ~git/hooks
+
+* Bugzilla
+
+* Added highlight to highlight diffs
+
+* Mirror for cgy?
+
+git config --global commit.template $HOME/.gitmessage.txt
+
+Commits must be single issue ; no group commits ; "one bug one commit"
+	interactive commit
+
+Code Review:
+*Git bundle
+     git bundle create myproposal.git origin/sharedbranch..HEAD
+You can receive it as if it were a repo:
+cd myworktree
+   git pull /tmp/myproposal.git
+
+git-fatfiles: Find all the big files
+
+git rev-list --all --objects | \
+    sed -n $(git rev-list --objects --all | \
+    cut -f1 -d' ' | \
+    git cat-file --batch-check | \
+    grep blob | \
+    sort -n -k 3 | \
+    tail -n40 | \
+    while read hash type size; do 
+         echo -n "-e s/$hash/$size/p ";
+    done) | \
+    sort -n -k1
+
+Delete files from branch:
+git filter-branch -f  --index-filter \
+    'git rm --force --cached --ignore-unmatch video/parasite-intro.avi' \
+     -- --all
+rm -Rf .git/refs/original && \
+    git reflog expire --expire=now --all && \
+    git gc --aggressive && \
+    git prune
+
+***
+
+For fork based workflow:
+* -reference  for checking out new branch
+
+Revert file: git checkout filename
+Rervert: git reset --hard
+
+
+*****
+git remote add web ssh://foundation/home/mbrannig/backgrounds.git
+git push web --all 
+
+* post-receive hook:
+
+GIT_WORK_TREE=/home/mbrannig/WORK/export/source git checkout -f
+< add some sort of build step here> 
+
+
+
+git push <remote> <branch>, push remote branch
+
+TRACKING
+  646  git init
+	add .gitignore
+  647  git add .
+  648  git status --ignored
+  649  git commit -m "merge"
+  650  git checkout -b cvs
+  651  git remote add origin ssh://git@scm/users/mbrannig/sf-linux-os/head.git
+  652  git push origin cvs
+git clone ssh://git@scm/users/mbrannig/sf-linux-os/head
+
+show ignored files git status --ignored
+
+Initial check out of CVS
+
+
+$ cd ~/cvs
+$ cvs co -d HEAD imslite
+$ cd HEAD
+$ git init
+$ git add .
+$ git commit -m 'Initial commit from CVS'
+$ git checkout -b cvs
+$ git remote add origin git@gitserver:/opt/git/ims.git
+$ git push origin cvs
+
+Setup of local clone
+
+$ cd ~/Sourcefire
+$ git clone git@gitserver:/opt/git/ims.git ims
+
+Gaining parity with CVS
+
+$ cd ~/cvs/HEAD
+$ SF_PREFIX=foo make update
+$ git add -A
+$ git commit -m 'Parity with CVS'
+$ git push
+
+$ cd ~/Sourcefire/ims
+$ git fetch
+$ git merge origin/cvs
+
+Merging branch into CVS
+
+$ cd ~/Sourcefire/ims
+$ git checkout cvs
+$ git merge [branch]
+$ git push
+
+$ cd ~/cvs/HEAD
+$ git fetch
+$ git merge origin/cvs
+$ cvs commit
+
+git checkout cvs
+git checkout -b <branch>
+
+ssh git@scm perms users/mbrannig/ims/head + WRITERS mbrannig-other
+ssh git@scm fork ims/current users/mbrannig/bob
+
+
+CONOPS
+git remote add next ssh://git@scm/ims/next
+git remote update
+git checkout -b release --track next/master 
+
+git checkout featureA
+git commit -a -m "foo"
+git checkout release
+git merge featureA
+git push next release:master
+
+# push local branch to remote repo
+git push origin featureA
+
+
+Fortunately GIT has a very easy solution for this, just run the following command on the file or path you want to ignore the changes of:
+
+git update-index --assume-unchanged <file>
+
