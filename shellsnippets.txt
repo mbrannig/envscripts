@@ -1,0 +1,215 @@
+#!/bin/bash
+
+# rpc
+
+# ssh user@rmthost "$(declare -f hello); hello" ; declare -p <varname>
+
+# introspection of functions
+# declare -F <func> >& /dev/null && <func>
+
+# [ condition ] && action
+
+runme()
+{
+
+    if [ "$DRYRUN" == "TRUE" ] ; then
+        echo_and_log "Dry Run - Command: [$*]"
+        return 0
+    fi
+
+    OUTPUT=$( $* 2>&1- )
+
+    rc=$?
+    if [ $rc -ne 0 ] ; then
+        echo_and_log "Command [$*] failed ($rc)!"
+        echo_and_log "[${OUTPUT}]"
+        echo_and_log ""
+    else
+        #echo_and_log "Command [$*] succeeded!"
+        if [ "${DEBUG_COMMANDS}" == "TRUE" ] ; then
+            echo_and_log "DEBUG: [$*] [$rc] [${OUTPUT}]"
+            echo_and_log ""
+        fi
+    fi
+    return $rc
+}
+
+check_rc()
+{
+    rc=$1
+    msg=$2
+
+    if [ $rc -ne 0 ] ; then
+        myexit $rc "$msg"
+    fi
+}
+
+SCRIPT_NAME=
+
+echo_and_log()
+{
+  TIMESTAMP=$( date '+%y%m%d %H:%M:%S' )
+  echo "[${SCRIPT_NAME}:pid ${BASHPID}:${TIMESTAMP}] $1"
+  if [ -f ${LOGFILE} ] ; then
+    echo "[${SCRIPT_NAME}:pid ${BASHPID}:${TIMESTAMP}] $1" >> ${LOGFILE}
+    #Close the file handles so that other things can log to the file:
+    1>&-
+    2>&-
+  fi
+}
+
+logmsg()
+{
+    TIMESTAMP=$( date '+%y%m%d %H:%M:%S' )
+    if [ -f ${LOGDIR} ] ; then
+        echo "[${SCRIPT_NAME}:pid ${BASHPID}:${TIMESTAMP}] $1" >> ${LOGDIR}
+    #Close the file handles so that other things can log to the file:
+        1>&-
+        2>&-
+    fi
+
+}
+
+lock()
+{
+    if [ "${NOLOCK}" == "TRUE" ] ; then
+        return 0
+    fi
+
+    runme mkdir $LOCKFILE
+    if (( $? != 0 )); then
+        echo_and_log "Unable to lock ${LOCKFILE}"
+        exit 1
+    fi
+    echo "$$" > ${LOCKFILE}/pid
+    return 0  #succeed
+}
+
+unlock()
+{
+   if [ "${NOLOCK}" == "TRUE" ] ; then
+        return 0
+    fi
+   runme rm -rf ${LOCKFILE}
+
+   if [ -d ${LOCKFILE} ] ; then
+       echo "Unable to unlock ${LOCKFILE}"
+       return 1
+   else
+       return 0  # success
+   fi
+
+}
+
+
+exist()
+{
+    local file=$1
+    if [ ! -f $file ] ; then
+        myexit 1 "File $file does not exist!"
+    fi
+
+}
+
+an_write()
+{
+    local file=$1
+
+    if [ ! -e $file ] ; then
+        return 0
+    fi
+
+
+    local owner=$(stat -c "%U" $file)
+    if [ "${owner}" != "${USER}" ] ; then
+        echo_and_log "You can not write to ${file}, please ask ${owner} to delete this!"
+        exit 1
+    fi
+
+}
+
+ask()          # See 'killps' for example of use.
+{
+    echo -n "$@" '[y/n] ' ; read ans
+    case "$ans" in
+        y*|Y*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+
+mark()
+{
+    local date_string=$( date "+%c_%s" )
+    local print_date=$(echo ${date_string} | awk -F'_' '{print $1}')
+    local seconds=$(echo ${date_string} | awk -F'_' '{print $2}')
+    echo_and_log "MARK ${seconds} $1"
+    if [ -n "${CURRENT_SECONDS}" ] ; then
+        ELAPSED=$(( ${seconds} - ${CURRENT_SECONDS} ))
+    fi
+    CURRENT_SECONDS=${seconds}
+}
+
+print_elapsed()
+{
+    if [ -z "$1" ] ; then
+        local elapsed=${ELAPSED}
+    else
+        local elapsed=$1
+    fi
+    local hours=$(( ${elapsed} / 3600 ))
+    local minutes=$(( (${elapsed} / 60) - ($hours * 60) ))
+    local seconds=$(( ${elapsed} % 60 ))
+    echo "${hours} hour(s) ${minutes} minute(s) ${seconds} second(s)"
+
+}
+
+log_elapsed()
+{
+    local elapsed=${ELAPSED}
+    local hours=$(( ${elapsed} / 3600 ))
+    local minutes=$(( (${elapsed} / 60) - ($hours * 60) ))
+    local seconds=$(( ${elapsed} % 60 ))
+    echo_and_log "Elapased time for $1: ${hours} hour(s) ${minutes} minute(s) ${seconds} second(s)"
+
+}
+
+get_elapsed()
+{
+    echo ${ELAPSED}
+}
+
+
+# case statement
+
+while [ $# -gt 0 ]
+do
+    case "$1" in
+       -h|-u)
+            usage
+            exit 0
+            ;;
+        -v)
+            version
+            exit 0
+            ;;
+        esac
+    shift
+done
+
+# save, clear screen
+tput smcup
+clear
+
+# restore
+tput rmcup
+
+grep ^root: /etc/passwd >/dev/null 2>&1 || echo "root was not found - check the pub at the corner"
+
+[command] && [command]
+An AND conditional causes the second command to be executed only if the first command ends and exits successfully.
+[command] || [command]
+An OR conditional causes the second command to be executed only if the first command ends and exits with a failure exit code (any non-zero exit code).
+
+# check for sudo privs
+SUDOPRIVS=$(if ! sudo -l -S < /dev/null >& /dev/null ; then echo "FALSE" ; else echo "TRUE" ; fi  )
