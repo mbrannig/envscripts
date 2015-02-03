@@ -42,8 +42,8 @@ PURPLE="\[\033[0;35m\]"
 RV="\e[7m"
 
 
-# if [ -f /etc/bash_completion ] ; then 
-# 	source /etc/bash_completion 
+# if [ -f /etc/bash_completion ] ; then
+# 	source /etc/bash_completion
 # elif [ -f /usr/lib/git-core/git-completion.bash ] ; then
 # 	source /usr/lib/git-core/git-completion.bash
 # 	if [ -f /usr/lib/git-core/git-prompt.sh ] ; then
@@ -52,7 +52,7 @@ RV="\e[7m"
 
 
 
-if [ -f ${REPO}/git-completion ] ; then 
+if [ -f ${REPO}/git-completion ] ; then
 	source ${REPO}/git-completion
 	if [ -f ${REPO}/git-sh-prompt ] ; then
 		source ${REPO}/git-sh-prompt
@@ -92,7 +92,7 @@ function loadavg() {
 	read one five fifteen rest < /proc/loadavg
     fi
 }
- 
+
 function exitstatus {
 
 	EXITSTATUS="$?"
@@ -191,43 +191,6 @@ function mount-sshfs {
 	fi
 }
 
-function mount-sshfs-scm {
-	local hd=$1
-	local given_mp=$2
-
-	local host
-	local md
-
-	host=$(echo $hd | cut -d: -f1)
-	md=$(echo $hd | cut -d: -f2)
-
-	if [ -z "${given_mp}" ] ; then
-		mp="${HOME}/sshfs/$md"
-	else
-		mp="${HOME}/$given_mp"
-	fi
-
-	mkdir -pv ${mp}
-
-	if [ ${PLATFORM} == "Darwin" ] ; then
-		SSHFS_OPTIONS=",noappledouble,volname=$host-$mp"
-		#echo "No mounting on Mac OSX"
-		#return
-	fi
-
-	if ping -c 1 scm.esn.sourcefire.com >& /dev/null ; then
-		if ! mount | grep $hd >& /dev/null ; then
-			echo -n "Mounting $host : $md on $mp..."
-			sshfs $hd $mp -C -o workaround=nodelaysrv,cache=no,idmap=user${SSHFS_OPTIONS}
-			echo "done"
-		else
-			echo "$hd already mounted"
-		fi
-	else
-		echo "Unable able to reach $host"
-	fi
-}
-
 function umount-sshfs {
 	local mp=$1
 	if [ ${PLATFORM} == "Linux" ] ; then
@@ -252,7 +215,7 @@ function session {
 	if [ -z "${1}" ] ; then
 		echo "Available sessions are:"
 		tmux list-sessions
-	else 
+	else
 		if [ -z "${TMUX}" ] ; then
 			if tmux has-session -t ${1} ; then
 				tmux attach-session -t ${1}
@@ -267,9 +230,9 @@ function session {
 
 function mount-ender {
     if ping -c 1 ender.englab.sourcefire.com >& /dev/null ; then
-	if ! mount | grep ender.sfeng >& /dev/null ; then
+	if ! mount | grep ender.englab >& /dev/null ; then
 	    echo -n "Mounting ender on ~/src ... "
-	    sshfs ender.englabg.sourcefire.com:src/ ~/src -C -o uid=${MYUID},gid=${MYGID}
+	    sshfs ender.englab.sourcefire.com:src/ ~/src -C -o uid=${MYUID},gid=${MYGID}
 	    echo " done"
 	else
 	    echo -n "Unmount ~/src ... "
@@ -336,13 +299,13 @@ function ask()          # See 'killps' for example of use.
     esac
 }
 
-function ffi() 
-{ 
-    find . -type f -iname '*'$*'*' -ls ; 
+function ffi()
+{
+    find . -type f -iname '*'$*'*' -ls ;
 }
-function ff() 
-{ 
-    find . -type f -iname $* -ls ; 
+function ff()
+{
+    find . -type f -iname $* -ls ;
 }
 
 function diff_tree()
@@ -371,24 +334,24 @@ function xtitle()      # Adds some text in the terminal frame.
 		title="${SHORTHOST}:${CHROOT_NAME}"
 	    else
 		if [ "${USER}" = "mbrannig" ] ; then
-		    title="${SHORTHOST}" 
+		    title="${SHORTHOST}"
 		else
-		    title="${USER}@${SHORTHOST}" 
-		fi	
+		    title="${USER}@${SHORTHOST}"
+		fi
 	    fi
 	fi
     else
 	title="$1"
 	export TITLE=${title}
     fi
-    
+
 
     case "$TERM" in
         *term | rxvt | xterm-* )
             echo -n -e "\033]0;${title}\007" ;;
 	screen)
 	     echo -n -e "\033k${title}\033\\" ;;
-        *)  
+        *)
             ;;
     esac
 }
@@ -400,11 +363,11 @@ function _branch_list()
 {
 
 #    local list=$(cd ~/src/WORK ; find ${BRANCH_REPOS} -maxdepth 1 -type d ! -name ".bzr" -printf "%f " )
- 
+
     local tmp
     local list
     for i in ${BRANCH_REPOS} ; do
-	for j in tracking bugfix feature ; do 
+	for j in tracking bugfix feature ; do
 	    tmp=$(cd ~/src/WORK/${i}/${j} ; find . -maxdepth 1 -type d ! -name ".bzr" -printf "${j}/%f\n" | grep -v "^\." | xargs )
 	    list="$list $tmp"
 	done
@@ -412,19 +375,19 @@ function _branch_list()
     echo "${BRANCHES} ${list}"
 }
 
-function _branches() 
+function _branches()
 {
     cur=${COMP_WORDS[COMP_CWORD]}
     prev=${COMP_WORDS[COMP_CWORD-1]}
     if [ $COMP_CWORD -eq 1 ]; then
         COMPREPLY=( $( compgen -W "$(_branch_list)" $cur ) )
     elif [ $COMP_CWORD -eq 2 ]; then
-        case "$prev" in 
+        case "$prev" in
         help)
             COMPREPLY=( $( compgen -W "$(_branch_list) commands" $cur ) )
             ;;
         esac
-    fi 
+    fi
 }
 
 function br()
@@ -469,7 +432,7 @@ progress()
 	count=$(($count + 1))
 	sleep 1
     done
-    
+
     echo -e "\b$3"
 }
 
@@ -550,18 +513,18 @@ function slackupgrade()
 function reset-lom()
 {
 
-    ipmitool -I lanplus -H $1  -U admin -P Sourcefire power reset; 
+    ipmitool -I lanplus -H $1  -U admin -P Sourcefire power reset;
 }
 
-function lom() 
-{ 
+function lom()
+{
     xtitle "Console: $1"
-    ipmitool -I lanplus -H $1  -U admin -P Sourcefire sol activate; 
+    ipmitool -I lanplus -H $1  -U admin -P Sourcefire sol activate;
 }
 
-function unlom() 
-{ 
-    ipmitool -I lanplus -H $1  -U admin -P Sourcefire sol deactivate; 
+function unlom()
+{
+    ipmitool -I lanplus -H $1  -U admin -P Sourcefire sol deactivate;
 }
 
 function caps-to-ctrl()
@@ -600,13 +563,13 @@ vpn-time-remaining ()
 	local _remaining=$(( ${seconds_in_day} - ${_seconds} ))
 	local remaining=$( sec2time ${_remaining})
 	local elapsed=$( sec2time ${_seconds})
-	echo "Elapsed VPN (${vpn}) Time ${elapsed} Remaining VPN time ${remaining}" 
+	echo "Elapsed VPN (${vpn}) Time ${elapsed} Remaining VPN time ${remaining}"
 }
 
 
 mount_work()
 {
- (cd ~ ; mount-sshfs-scm pecan:transfer transfer)
+ (cd ~ ; mount-sshfs pecan:transfer transfer)
 	sf_cvs
 hdiutil attach -mountpoint ~/WORK ~/work.sparsebundle/
 }
@@ -632,6 +595,12 @@ mount_work
 
 }
 
+loginsf()
+{
+	for password in Thair5sheeroo.j Sourcefire Admin123 ; do
+		sshpass -p ${password} ssh-copy-id admin@$1
+	done
+}
 
 
 get_chroot
@@ -641,7 +610,7 @@ if ! bash --version | grep 2.05 >& /dev/null ; then
 fi
 
 
-if host ${HOST} | grep -i cisco >& /dev/null ; then
+if  | grep -i cisco >& /dev/null ; then
 #    echo -n "Setting up Cisco Environment (${ARCH}) ${CHROOT_NAME}: "
     export PYTHONPATH=/usr/local/lib/python:/usr/lib/python2.5
     export PRINTER=Ricoh-Aficio-MP-C2800
@@ -733,7 +702,7 @@ alias rsh="rs"
 
 complete -W '$(cd /var/tmp/mab ; "ls" -d BUILD-* | sed -e "s/BUILD-//g" )' sfp
 #complete -W '$(cd ~/src/WORK ; find IMS OS MODEL-PACK BUILD_SCRIPTS -maxdepth 1 -type d | xargs )' br
-complete -W '$(cd /etc/schroot/chroot.d ; "ls" )' schroot 
+complete -W '$(cd /etc/schroot/chroot.d ; "ls" )' schroot
 complete -W '$(tmux ls -F "#{session_name}")' resume
 complete -W '$(tmux ls -F "#{session_name}")' session
 complete -W '$(cd ~/Library/Application\ Support/Unison ; ls -1 *.prf | grep -v default.prf | sed -e 's/\.prf//g')' unison
@@ -741,10 +710,10 @@ complete -F _branches br
 complete -A hostname   ssh ping localboot
 complete -W '${HOST_LIST}' ssh ping rsh localboot
 complete -A export     printenv
-complete -A variable   export local readonly 
+complete -A variable   export local readonly
 complete -A enabled    builtin
 complete -A alias      alias unalias
-complete -A function   function 
+complete -A function   function
 complete -A shopt      shopt
 complete -A stopped -P '%' bg
 complete -A job -P '%'     fg jobs disown
@@ -753,24 +722,24 @@ complete -A directory   -o default cd
 
 
 # bzr
-function _bzr_commands() 
+function _bzr_commands()
 {
-     bzr help commands | sed -r 's/^([-[:alnum:]]*).*/\1/' | grep '^[[:alnum:]]' 
+     bzr help commands | sed -r 's/^([-[:alnum:]]*).*/\1/' | grep '^[[:alnum:]]'
 }
 
-function _bzr() 
+function _bzr()
 {
     cur=${COMP_WORDS[COMP_CWORD]}
     prev=${COMP_WORDS[COMP_CWORD-1]}
     if [ $COMP_CWORD -eq 1 ]; then
         COMPREPLY=( $( compgen -W "$(_bzr_commands)" $cur ) )
     elif [ $COMP_CWORD -eq 2 ]; then
-        case "$prev" in 
+        case "$prev" in
         help)
             COMPREPLY=( $( compgen -W "$(_bzr_commands) commands" $cur ) )
             ;;
         esac
-    fi 
+    fi
 }
 
 complete -F _bzr -o default bzr
