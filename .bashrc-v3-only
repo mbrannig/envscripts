@@ -70,7 +70,7 @@ function rsession()
     fi	
 
     #ssh -tt ${user}@${host} "tmux attach-session -t $2"
-	ssh -tt ${user}@${host} "( (tmux has-session -t $2 && tmux attach-session -t $2) || (tmux new-session -s $2) ) && exit 0"
+	ssh -tt ${ARG} "( (tmux has-session -t $2 && tmux attach-session -t $2) || (tmux new-session -s $2) ) && exit 0"
 
 }
 
@@ -163,3 +163,4 @@ function wait_host()
     echo -e "\b **** Host $1 ready"
 
 }
+
