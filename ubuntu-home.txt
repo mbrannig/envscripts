@@ -1,10 +1,7 @@
 apt-get xfce4 xfdesktop4 xfdesktop4-data python-software-properties emacs23 schroot vim autofs multitail cvs tcsh msmtp openssh-server xvnc4viewer vnc4server xfce4-goodies xscreensaver-data xscreensaver-gl xscreensaver-data-extra xscreensaver-screensaver-bsod xscreensaver-gl-extra autokey-gtk build-essential xfwm4-themes autofs tomboy tmux openconnect sshfs
 
-add-apt-repository ppa:mercurial-ppa/releases
-add-apt-repository ppa:bzr/ppa
 add-apt-repository ppa:git-core/ppa
-apt-get install bzr bzrtools mercurial git
-
+apt-get install git
 
 apt-get purge liboverlay-scrollbar-*
 
@@ -56,3 +53,6 @@ apt-get install gedit-developer-plugins gedit-latex-plugin gedit-plugins
 apt-add-repository ppa:ubuntu-on-rails/ppa
 apt-get update
 apt-get install gedit-gmate
+
+tango-icon-theme tango-icon-theme-common-tango-icon-theme-extras
+don't need openconnect
