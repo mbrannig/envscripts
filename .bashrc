@@ -11,7 +11,9 @@ if [ -f /etc/bashrc ] ; then
 fi
 
 ulimit -s 4096
-ulimit -c unlimited
+if ! grep Santiago /etc/redhat-release >& /dev/null  ; then
+	ulimit -c unlimited
+fi
 
 [ -z "$PS1" ] && return
 
@@ -590,10 +592,28 @@ setup_mux scm.esn.sourcefire.com
 setup_mux ajax.englab.sourcefire.com
 setup_mux walnut.englab.sourcefire.com
 setup_mux alai.englab.sourcefire.com
-	autossh -M 4321 -f -N tunnel
+#	autossh -M 4321 -f -N tunnel
 	autossh -M 5321 -f -N pod-tunnel
 mount_work
 
+}
+
+setup_muxs()
+{
+	local hosts="indus.englab.sourcefire.com pecan.englab.sourcefire.com scm.esn.sourcefire.com ajax.englab.sourcefire.com walnut.englab.sourcefire.com"
+	for h in ${hosts} ; do
+		setup_mux ${h}
+	done
+}
+
+setup_tunnels()
+{
+	local tunnels="pod-tunnel cvo-gw-tunnel"
+	for t in ${tunnels} ; do
+		if grep ${t} ~/.ssh/config >& /dev/null ; then
+			echo "tunnel"
+		fi
+	done
 }
 
 loginsf()
@@ -610,23 +630,24 @@ if ! bash --version | grep 2.05 >& /dev/null ; then
     source ${REPO}/.bashrc-v3-only
 fi
 
+if ping -c 2 scm01.esn.sourcefire.com >& /dev/null ; then
+	export CISCO_NETWORK=TRUE
+fi
 
-if hostname | grep -i MBRANNIG-M-G180 >& /dev/null ; then
+if hostname | grep -i MBRANNIG-M-904K >& /dev/null ; then
+	export CISCO_NETWORK=TRUE
+	export UNISONLOCALHOSTNAME=bailey
+fi
+if [ -n "${CISCO_NETWORK}" ] ; then
 
+		export SF_PREFIX=${SF_PREFIX:=/var/tmp/BUILD}
+		sf_cvs
 #    echo -n "Setting up Cisco Environment (${ARCH}) ${CHROOT_NAME}: "
     export PYTHONPATH=/usr/local/lib/python:/usr/lib/python2.5
     export PRINTER=Ricoh-Aficio-MP-C2800
     export REPLYTO=mbrannig@cisco.com
     EXTRAPATH=/usr/Python-2.6.4/bin
-    export SF_PREFIX=${SF_PREFIX:=/var/tmp/BUILD}
-    sf_cvs
-    HOST_LIST=$(cat ${REPO}/hosts-sf.txt ${REPO}/hosts.txt | xargs)
-    HOST_LIST_FILE=${REPO}/hosts-sf.txt
-#    echo "SF_PREFIX is set to ${SF_PREFIX}"
-	export VMWARE_PATHS=/vmware/mbrannig
-	if [ -f ~/.ciscolaptop ] ; then
-		export UNISONLOCALHOSTNAME=bailey
-	fi
+
 else
 #    echo "Setting up Den of Slack Environment (${ARCH}):"
     export PRINTER=officejet7310
