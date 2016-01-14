@@ -61,10 +61,10 @@ if [ -f ${REPO}/git-completion ] ; then
 	fi
 fi
 
-export GIT_PS1_SHOWDIRTYSTATE=auto
-export GIT_PS1_SHOWUNTRACKEDFILES=auto
-export GIT_PS1_SHOWUPSTREAM="verbose"
-export GIT_PS1_SHOWCOLORHINTS=on
+export GIT_PS1_SHOWDIRTYSTATE=
+export GIT_PS1_SHOWUNTRACKEDFILES=
+export GIT_PS1_SHOWUPSTREAM="auto"
+export GIT_PS1_SHOWCOLORHINTS=
 
 function parse_cvs_branch() {
     if [ -e CVS ] ; then
@@ -449,19 +449,19 @@ function copy_iso()
 	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_3D_Device_1000*cfg ${SF_PREFIX}/pxe-config/pxe/Sourcefire_3D_Device_2000*cfg ${SF_PREFIX}/pxe-config/pxe/Sourcefire_Defense_Center_1000*cfg indus:/var/www/pxe
 
     else
-	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*S3*iso indus:/var/www/iso
-	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*Virtual*iso indus:/var/www/iso
-	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*9900*iso indus:/var/www/iso
+	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*S3*iso indus.cisco.com:/var/www/iso
+	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*Virtual*iso indus.cisco.com:/var/www/iso
+	rsync -va -e ssh ${SF_PREFIX}/iso/Sourcefire_*9900*iso indus.cisco.com:/var/www/iso
 
-	sed -i -e 's/SRV=.*$/SRV=10.5.60.236/g' -e 's/%%PATH%%//g' ${SF_PREFIX}/pxe-config/integration/Sourcefire*config
+	sed -i -e 's/SRV=.*$/SRV=10.150.160.19/g' -e 's/%%PATH%%//g' ${SF_PREFIX}/pxe-config/integration/Sourcefire*config
 	sed -i -e 's,INTEGCONF=.*/%%PATH%%/pxe-config/integration,INTEGCONF=10.5.60.236/integ,g' ${SF_PREFIX}/pxe-config/pxe/Sourcefire*cfg
 
-	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_*S3*config indus:/var/www/integ
-	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_*Virtual*config indus:/var/www/integ
-	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_*9900*config indus:/var/www/integ
-	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_*S3*cfg indus:/var/www/pxe
-	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_*Virtual*cfg indus:/var/www/pxe
-	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_*9900*cfg indus:/var/www/pxe
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_*S3*config indus.cisco.com:/var/www/integ
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_*Virtual*config indus.cisco.com:/var/www/integ
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/integration/Sourcefire_*9900*config indus.cisco.com:/var/www/integ
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_*S3*cfg indus.cisco.com:/var/www/pxe
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_*Virtual*cfg indus.cisco.com:/var/www/pxe
+	rsync -va -e ssh ${SF_PREFIX}/pxe-config/pxe/Sourcefire_*9900*cfg indus.cisco.com:/var/www/pxe
     fi
 
 
@@ -630,7 +630,7 @@ if ! bash --version | grep 2.05 >& /dev/null ; then
     source ${REPO}/.bashrc-v3-only
 fi
 
-if ping -c 2 scm01.esn.sourcefire.com >& /dev/null ; then
+if ping -c 2 10.83.163.219 >& /dev/null ; then
 	export CISCO_NETWORK=TRUE
 fi
 
@@ -647,6 +647,7 @@ if [ -n "${CISCO_NETWORK}" ] ; then
     export PRINTER=Ricoh-Aficio-MP-C2800
     export REPLYTO=mbrannig@cisco.com
     EXTRAPATH=/usr/Python-2.6.4/bin
+    export UNISONLOCALHOSTNAME=indus
 
 else
 #    echo "Setting up Den of Slack Environment (${ARCH}):"
@@ -673,7 +674,7 @@ fi
 source ~/envscripts/liquidprompt
 BRANCH_REPOS="OS 3D"
 
-export PATH=~/envscripts/bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/sbin:/bin:/usr/bin:/usr/local/bin::/usr/bin/X11:${EXTRAPATH}:/nfs/saruman/build/intel/cce/10.1.015/bin:/usr/local/go/bin
+export PATH=~/.rbenv/bin/:~/envscripts/bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/sbin:/bin:/usr/bin:/usr/local/bin::/usr/bin/X11:${EXTRAPATH}:/nfs/saruman/build/intel/cce/10.1.015/bin:/usr/local/go/bin
 export EDITOR=vi
 export VISUAL=vi
 export PAGER=less
@@ -720,6 +721,7 @@ alias help="apropos"
 alias reup="source ${REPO}/.bashrc"
 alias grep="egrep --color"
 alias rsh="rs"
+alias emacs="TERM=xterm-256color emacs -nw"
 
 ## completes
 
@@ -728,7 +730,11 @@ complete -W '$(cd /var/tmp/mab ; "ls" -d BUILD-* | sed -e "s/BUILD-//g" )' sfp
 complete -W '$(cd /etc/schroot/chroot.d ; "ls" )' schroot
 complete -W '$(tmux ls -F "#{session_name}")' resume
 complete -W '$(tmux ls -F "#{session_name}")' session
-complete -W '$(cd ~/Library/Application\ Support/Unison ; ls -1 *.prf | grep -v default.prf | sed -e 's/\.prf//g')' unison
+if [ ${PLATFORM} == "Darwin" ] ; then
+	complete -W '$(cd ~/Library/Application\ Support/Unison ; ls -1 *.prf | grep -v default.prf | sed -e 's/\.prf//g')' unison
+else
+	complete -W '$(cd ~/.unison ; ls -1 *.prf | grep -v default.prf | sed -e 's/\.prf//g')' unison
+fi
 complete -F _branches br
 complete -A hostname   ssh ping localboot
 complete -W '${HOST_LIST}' ssh ping rsh localboot

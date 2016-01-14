@@ -1267,19 +1267,19 @@ _lp_smart_mark()
     else
         mark="\\\$"
     fi
-    if [[ "$1" == "git" ]]; then
-        mark=$LP_MARK_GIT
-    elif [[ "$1" == "git-svn" ]]; then
-        mark="$LP_MARK_GIT$LP_MARK_SVN"
-    elif [[ "$1" == "hg" ]]; then
-        mark=$LP_MARK_HG
-    elif [[ "$1" == "svn" ]]; then
-        mark=$LP_MARK_SVN
-    elif [[ "$1" == "fossil" ]]; then
-        mark=$LP_MARK_FOSSIL
-    elif [[ "$1" == "bzr" ]]; then
-        mark=$LP_MARK_BZR
-    fi
+    #if [[ "$1" == "git" ]]; then
+    #    mark=$LP_MARK_GIT
+    #elif [[ "$1" == "git-svn" ]]; then
+    #    mark="$LP_MARK_GIT$LP_MARK_SVN"
+    #elif [[ "$1" == "hg" ]]; then
+    #    mark=$LP_MARK_HG
+    #elif [[ "$1" == "svn" ]]; then
+    #    mark=$LP_MARK_SVN
+    #elif [[ "$1" == "fossil" ]]; then
+    #    mark=$LP_MARK_FOSSIL
+    #elif [[ "$1" == "bzr" ]]; then
+    #    mark=$LP_MARK_BZR
+    #fi
     echo -ne "${COL}${mark}${NO_COL}"
 }
 
