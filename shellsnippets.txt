@@ -111,7 +111,7 @@ exist()
 
 }
 
-an_write()
+can_write()
 {
     local file=$1
 

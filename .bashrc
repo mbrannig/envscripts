@@ -630,14 +630,6 @@ if ! bash --version | grep 2.05 >& /dev/null ; then
     source ${REPO}/.bashrc-v3-only
 fi
 
-if ping -c 2 10.83.163.219 >& /dev/null ; then
-	export CISCO_NETWORK=TRUE
-fi
-
-if hostname | grep -i MBRANNIG-M-904K >& /dev/null ; then
-	export CISCO_NETWORK=TRUE
-	export UNISONLOCALHOSTNAME=bailey
-fi
 if [ -n "${CISCO_NETWORK}" ] ; then
 
 		export SF_PREFIX=${SF_PREFIX:=/var/tmp/BUILD}

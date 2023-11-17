@@ -74,6 +74,12 @@ function rsession()
 
 }
 
+function lsession()
+{
+	local name=$1
+	( (tmux has-session -t ${name} && tmux attach-session -t ${name}) || (tmux new-session -s ${name}) )
+}
+
 function wait_for_port()
 {
     local HOST=$1
